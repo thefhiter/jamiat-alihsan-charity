@@ -12,6 +12,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕌</text></svg>">
+  <meta name="theme-color" content="#1b6b4f">
+  <!-- PWA:start -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="build/icon-192.png">
+  <!-- PWA:end -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -64,5 +69,12 @@
   <script src="js/settings.js"></script>
   <script src="js/search.js"></script>
   <script src="js/app.js"></script>
+  <!-- SW:start -->
+  <script>
+    if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+      window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+    }
+  </script>
+  <!-- SW:end -->
 </body>
 </html>

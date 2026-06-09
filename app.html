@@ -1,0 +1,2232 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>نظام إدارة العائلات والمتبرعين — جمعية الإحسان الخيرية</title>
+  <!-- نسخة الملف الواحد — مُولّدة آلياً عبر tools/build-single.cjs -->
+  <meta name="description" content="نظام لإدارة العائلات المنتفعة والمتبرعين والمساعدات والمداخيل والمصاريف لفائدة الجمعيات الخيرية، يعمل دون اتصال بالإنترنت.">
+
+  <!-- خطوط عربية (تتحوّل تلقائياً لخطوط النظام عند انقطاع الإنترنت) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕌</text></svg>">
+  <meta name="theme-color" content="#1b6b4f">
+  <style>
+/* =================================================================
+   جمعية الإحسان الخيرية — نظام إدارة العائلات والمتبرعين
+   Al-Ihsan Charity — Management System Stylesheet (RTL)
+   ================================================================= */
+
+:root {
+  --green-900: #0f3d2e;
+  --green-800: #14513c;
+  --green-700: #1b6b4f;
+  --green-600: #218066;
+  --green-500: #2a9d77;
+  --green-100: #e3f4ec;
+  --green-50:  #f1faf5;
+  --gold-600:  #c79a32;
+  --gold-500:  #e0b84a;
+  --gold-100:  #fbf3da;
+  --ink:       #1f2a28;
+  --muted:     #647067;
+  --line:      #dfe7e2;
+  --bg:        #f4f7f5;
+  --card:      #ffffff;
+  --danger:    #c0392b;
+  --danger-bg: #fdecea;
+  --info:      #2563eb;
+  --warn:      #b7791f;
+  --radius:    14px;
+  --radius-sm: 9px;
+  --shadow:    0 6px 22px rgba(15, 61, 46, 0.08);
+  --shadow-lg: 0 14px 40px rgba(15, 61, 46, 0.16);
+  --sidebar-w: 248px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: "Cairo", "Tajawal", "Segoe UI", "Tahoma", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  direction: rtl;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; font-size: 15px; }
+a { color: var(--green-700); text-decoration: none; }
+
+/* ---------- App layout ---------- */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  background: linear-gradient(180deg, var(--green-900), var(--green-800));
+  color: #eaf5ef;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+}
+.brand {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand .logo {
+  width: 46px; height: 46px;
+  flex: 0 0 46px;
+  border-radius: 12px;
+  background: radial-gradient(circle at 30% 30%, var(--gold-500), var(--gold-600));
+  display: grid; place-items: center;
+  font-size: 24px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25);
+}
+.brand h1 { font-size: 16px; margin: 0; font-weight: 800; line-height: 1.35; }
+.brand span { font-size: 11.5px; color: #aeccbd; display: block; }
+
+.nav { padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.nav button {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #d7e8df;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: right;
+  transition: background .15s, color .15s;
+}
+.nav button .ico { font-size: 18px; width: 22px; text-align: center; }
+.nav button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.nav button.active {
+  background: var(--gold-500);
+  color: var(--green-900);
+  box-shadow: var(--shadow);
+}
+.nav .badge {
+  margin-inline-start: auto;
+  background: rgba(255,255,255,0.16);
+  color: #fff;
+  font-size: 12px; font-weight: 700;
+  padding: 1px 9px; border-radius: 20px;
+  min-width: 22px; text-align: center;
+}
+.nav button.active .badge { background: rgba(15,61,46,0.20); color: var(--green-900); }
+
+.sidebar-foot {
+  padding: 14px 18px;
+  font-size: 11.5px;
+  color: #9fc1b1;
+  border-top: 1px solid rgba(255,255,255,0.10);
+}
+
+/* ---------- Main ---------- */
+.main { overflow-y: auto; height: 100vh; }
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(244,247,245,0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+  padding: 16px 28px;
+  display: flex; align-items: center; gap: 16px;
+}
+.topbar h2 { margin: 0; font-size: 21px; font-weight: 800; color: var(--green-900); }
+.topbar .sub { color: var(--muted); font-size: 13px; }
+.topbar .spacer { flex: 1; }
+.page-titles { min-width: 0; }
+
+/* ---------- البحث الشامل ---------- */
+.global-search { position: relative; width: 340px; max-width: 42vw; }
+.global-search .gs-ico {
+  position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); font-size: 16px; pointer-events: none;
+}
+.global-search input {
+  width: 100%; padding: 10px 38px 10px 14px;
+  border: 1px solid var(--line); border-radius: 11px; background: #fff; outline: none;
+  transition: border .12s, box-shadow .12s;
+}
+.global-search input:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-100); }
+.gs-results {
+  position: absolute; top: calc(100% + 8px); inset-inline-start: 0; inset-inline-end: 0;
+  background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow-lg); max-height: 64vh; overflow-y: auto; z-index: 60; display: none;
+  padding: 4px 0;
+}
+.gs-results.open { display: block; }
+.gs-group { padding: 9px 16px 5px; font-size: 11.5px; font-weight: 800; color: var(--muted); }
+.gs-item { display: flex; align-items: center; gap: 11px; padding: 9px 16px; cursor: pointer; }
+.gs-item:hover, .gs-item.active { background: var(--green-50); }
+.gs-item .gi { flex: 0 0 32px; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font-size: 16px; }
+.gs-item .gi.ic-green { background: var(--green-100); }
+.gs-item .gi.ic-gold { background: var(--gold-100); }
+.gs-item .gi.ic-blue { background: #e6effe; }
+.gs-item .gtxt { min-width: 0; flex: 1; }
+.gs-item .gt { font-weight: 700; font-size: 14px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gs-item .gsub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gs-item .gs-tag { font-size: 10px; padding: 1px 7px; }
+.gs-empty { padding: 20px 16px; text-align: center; color: var(--muted); font-size: 13px; }
+.gs-more { padding: 7px 16px; font-size: 12px; color: var(--green-700); background: var(--green-50); }
+
+.content { padding: 24px 28px 60px; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid transparent;
+  background: var(--green-600);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700; font-size: 14.5px;
+  transition: transform .06s, filter .15s, background .15s;
+  white-space: nowrap;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(1px); }
+.btn .ico { font-size: 17px; }
+.btn.secondary { background: #fff; color: var(--green-800); border-color: var(--line); }
+.btn.secondary:hover { background: var(--green-50); }
+.btn.gold { background: var(--gold-500); color: var(--green-900); }
+.btn.ghost { background: transparent; color: var(--green-800); border-color: transparent; }
+.btn.ghost:hover { background: var(--green-100); }
+.btn.danger { background: var(--danger); }
+.btn.sm { padding: 6px 11px; font-size: 13px; border-radius: 8px; }
+.btn.block { width: 100%; justify-content: center; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- Cards & stat tiles ---------- */
+.cards { display: grid; gap: 16px; }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.card .card-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 20px; border-bottom: 1px solid var(--line);
+}
+.card .card-head h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--green-900); }
+.card .card-head .spacer { flex: 1; }
+.card .card-body { padding: 18px 20px; }
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  min-height: 92px;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.stat .ico-bg {
+  flex: 0 0 46px;
+  width: 46px; height: 46px; border-radius: 12px;
+  display: grid; place-items: center; font-size: 23px;
+}
+.stat .meta { flex: 1 1 auto; min-width: 0; }
+.stat .label { color: var(--muted); font-size: 13px; font-weight: 600; line-height: 1.35; }
+.stat .value { font-size: 27px; font-weight: 800; color: var(--green-900); margin-top: 3px; line-height: 1.2; word-break: break-word; }
+.stat .unit { font-size: 14px; color: var(--muted); font-weight: 600; }
+.stat.green .ico-bg { background: var(--green-100); color: var(--green-700); }
+.stat.gold  .ico-bg { background: var(--gold-100); color: var(--gold-600); }
+.stat.blue  .ico-bg { background: #e6effe; color: var(--info); }
+.stat.red   .ico-bg { background: var(--danger-bg); color: var(--danger); }
+
+/* ---------- Toolbar / search ---------- */
+.toolbar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 18px; flex-wrap: wrap;
+}
+.search {
+  position: relative; flex: 1; min-width: 220px; max-width: 420px;
+}
+.search input {
+  width: 100%;
+  padding: 10px 40px 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  outline: none;
+}
+.search input:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-100); }
+.search .si {
+  position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); font-size: 17px; pointer-events: none;
+}
+.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill {
+  border: 1px solid var(--line); background: #fff; color: var(--muted);
+  padding: 7px 13px; border-radius: 20px; font-size: 13px; font-weight: 700;
+}
+.pill.active { background: var(--green-700); color: #fff; border-color: var(--green-700); }
+
+/* ---------- Table ---------- */
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--green-50);
+  color: var(--green-900);
+  font-weight: 800; font-size: 13px;
+  text-align: right;
+  padding: 13px 16px;
+  border-bottom: 2px solid var(--green-100);
+  white-space: nowrap;
+}
+tbody td { padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 14px; vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--green-50); }
+.t-actions { display: flex; gap: 6px; justify-content: flex-start; }
+.icon-btn {
+  border: 1px solid var(--line); background: #fff;
+  width: 32px; height: 32px; border-radius: 8px;
+  display: grid; place-items: center; font-size: 15px; color: var(--muted);
+  transition: all .12s;
+}
+.icon-btn:hover { background: var(--green-100); color: var(--green-800); border-color: var(--green-100); }
+.icon-btn.danger:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-bg); }
+
+.tag {
+  display: inline-block; padding: 3px 11px; border-radius: 20px;
+  font-size: 12px; font-weight: 700;
+}
+.tag.green { background: var(--green-100); color: var(--green-800); }
+.tag.gold  { background: var(--gold-100); color: var(--gold-600); }
+.tag.blue  { background: #e6effe; color: var(--info); }
+.tag.gray  { background: #eef1ef; color: var(--muted); }
+.tag.red   { background: var(--danger-bg); color: var(--danger); }
+.tag.amber { background: #fef3c7; color: var(--warn); }
+
+.money { font-weight: 800; font-variant-numeric: tabular-nums; }
+.money.in  { color: var(--green-700); }
+.money.out { color: var(--danger); }
+
+/* ---------- Empty state ---------- */
+.empty {
+  text-align: center; padding: 54px 20px; color: var(--muted);
+}
+.empty .e-ico { font-size: 52px; margin-bottom: 10px; opacity: .7; }
+.empty h4 { margin: 0 0 4px; color: var(--ink); font-size: 17px; }
+
+/* ---------- Modal ---------- */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(15, 30, 24, 0.45);
+  display: none; align-items: flex-start; justify-content: center;
+  padding: 40px 16px; overflow-y: auto;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #fff; border-radius: 16px;
+  width: 100%; max-width: 720px;
+  box-shadow: var(--shadow-lg);
+  animation: pop .18s ease;
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 80px);   /* لا يتجاوز الشاشة، والجسم يتمرّر داخلياً */
+}
+.modal.wide { max-width: 920px; }
+@keyframes pop { from { transform: translateY(14px) scale(.98); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 22px; border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+.modal-head h3 { margin: 0; font-size: 18px; font-weight: 800; color: var(--green-900); }
+.modal-head .spacer { flex: 1; }
+.modal-close {
+  border: none; background: #f0f3f1; width: 34px; height: 34px;
+  border-radius: 9px; font-size: 18px; color: var(--muted);
+}
+.modal-close:hover { background: var(--danger-bg); color: var(--danger); }
+.modal-body { padding: 22px; flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.modal-foot {
+  padding: 16px 22px; border-top: 1px solid var(--line);
+  display: flex; gap: 10px; justify-content: flex-start;
+  background: #fff; border-radius: 0 0 16px 16px;
+  flex: 0 0 auto;
+}
+
+/* ---------- Forms ---------- */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+.form-grid .full { grid-column: 1 / -1; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 13px; font-weight: 700; color: var(--green-900); }
+.field label .req { color: var(--danger); }
+.field input, .field select, .field textarea {
+  padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px;
+  background: #fff; outline: none; transition: border .12s, box-shadow .12s;
+  width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-100);
+}
+.field textarea { resize: vertical; min-height: 64px; }
+.field .hint { font-size: 11.5px; color: var(--muted); }
+
+.fieldset {
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 16px 16px; margin-top: 4px;
+}
+.fieldset > legend {
+  font-size: 13.5px; font-weight: 800; color: var(--green-700);
+  padding: 0 8px; margin-inline-start: 4px;
+}
+.radio-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.radio-chip {
+  position: relative; cursor: pointer;
+}
+.radio-chip input { position: absolute; opacity: 0; }
+.radio-chip span {
+  display: inline-block; padding: 7px 14px; border-radius: 20px;
+  border: 1px solid var(--line); background: #fff; font-size: 13.5px; font-weight: 700; color: var(--muted);
+  transition: all .12s;
+}
+.radio-chip input:checked + span {
+  background: var(--green-700); color: #fff; border-color: var(--green-700);
+}
+.check-inline { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+.check-inline input { width: 17px; height: 17px; accent-color: var(--green-600); }
+
+/* children mini-table inside form */
+.children-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 13px; }
+.children-table th { background: var(--green-50); padding: 8px; font-size: 12px; border: 1px solid var(--line); }
+.children-table td { padding: 4px; border: 1px solid var(--line); }
+.children-table input, .children-table select { padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; }
+.children-table .x { color: var(--danger); cursor: pointer; font-weight: 800; }
+
+/* ---------- Detail view ---------- */
+.detail-grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+.info-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+.info-list.one { grid-template-columns: 1fr; }
+.info-item .k { font-size: 12px; color: var(--muted); font-weight: 700; }
+.info-item .v { font-size: 14.5px; font-weight: 700; color: var(--ink); }
+.profile-card { text-align: center; }
+.profile-avatar {
+  width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 12px;
+  background: linear-gradient(135deg, var(--green-500), var(--green-700));
+  color: #fff; display: grid; place-items: center; font-size: 34px; font-weight: 800;
+}
+.profile-card .pname { font-size: 19px; font-weight: 800; color: var(--green-900); }
+.profile-card .pfile { color: var(--muted); font-size: 13px; }
+
+/* ---------- Toast ---------- */
+.toast-wrap {
+  position: fixed; bottom: 22px; inset-inline-start: 22px; z-index: 200;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.toast {
+  background: #fff; border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--green-500);
+  border-radius: 12px; padding: 13px 18px; min-width: 260px;
+  box-shadow: var(--shadow-lg); font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; gap: 10px;
+  animation: slidein .25s ease;
+}
+@keyframes slidein { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+.toast.success { border-inline-start-color: var(--green-500); }
+.toast.error   { border-inline-start-color: var(--danger); }
+.toast.info    { border-inline-start-color: var(--info); }
+.toast .ti { font-size: 19px; }
+
+/* ---------- Misc ---------- */
+.row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.muted { color: var(--muted); }
+.mt-20 { margin-top: 20px; }
+.mb-16 { margin-bottom: 16px; }
+.sub-tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 18px; flex-wrap: wrap; }
+.sub-tabs button {
+  background: none; border: none; padding: 10px 16px; font-weight: 700; font-size: 14.5px;
+  color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+.sub-tabs button.active { color: var(--green-800); border-bottom-color: var(--gold-500); }
+
+.bars { display: flex; flex-direction: column; gap: 12px; }
+.bar-row { display: grid; grid-template-columns: 130px 1fr 60px; align-items: center; gap: 12px; font-size: 13.5px; }
+.bar-track { height: 12px; border-radius: 8px; background: var(--green-50); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--green-500), var(--green-700)); }
+.bar-row .bv { font-weight: 800; text-align: left; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1080px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .detail-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { position: fixed; z-index: 50; inset-inline-start: -100%; width: 80%; height: 100vh; transition: inset-inline-start .2s; }
+  .sidebar.show { inset-inline-start: 0; }
+  .form-grid, .grid-4, .grid-3, .grid-2, .info-list { grid-template-columns: 1fr; }
+  .content { padding: 16px; }
+  .menu-toggle { display: inline-flex !important; }
+  .topbar { padding: 12px 14px; gap: 10px; }
+  .topbar .sub { display: none; }
+  .global-search { width: auto; flex: 1 1 auto; max-width: none; }
+  .modal-overlay { padding: 14px 10px; }
+  .modal { max-height: calc(100vh - 28px); }
+}
+.menu-toggle { display: none; }
+
+/* ---------- Print ---------- */
+@media print {
+  .sidebar, .topbar, .toolbar, .no-print, .modal-foot, .menu-toggle { display: none !important; }
+  .app { display: block; }
+  .main { height: auto; overflow: visible; }
+  .content { padding: 0; }
+  .modal-overlay { position: static; background: none; display: block !important; padding: 0; }
+  .modal { box-shadow: none; max-width: 100%; max-height: none; display: block; }
+  .modal-body { overflow: visible; }
+  .modal-head { border-bottom: 2px solid #000; }
+  body { background: #fff; font-size: 13px; }
+  .print-only { display: block !important; }
+}
+.print-only { display: none; }
+
+</style>
+</head>
+<body>
+  <div class="app">
+    <!-- الشريط الجانبي -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="logo">🕌</div>
+        <div>
+          <h1 id="brandName">جمعية الإحسان الخيرية</h1>
+          <span id="brandBranch">بمنزل النور</span>
+        </div>
+      </div>
+      <nav class="nav" id="nav"><!-- يُبنى ديناميكياً --></nav>
+      <div class="sidebar-foot">
+        نظام إدارة العائلات والمتبرعين<br>
+        إصدار 1.0 — يعمل دون إنترنت
+      </div>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main">
+      <div class="topbar">
+        <button class="btn ghost menu-toggle" id="menuToggle" aria-label="القائمة">☰</button>
+        <div class="page-titles">
+          <h2 id="pageTitle">الرئيسية</h2>
+          <div class="sub" id="pageSub">نظرة عامة وإحصائيات</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="global-search" id="globalSearch">
+          <span class="gs-ico">🔍</span>
+          <input id="gsInput" type="search" autocomplete="off" aria-label="بحث شامل"
+                 placeholder="بحث عن عائلة أو فرد أو متبرّع…">
+          <div class="gs-results" id="gsResults"></div>
+        </div>
+      </div>
+      <div class="content" id="content"><!-- يُعرض القسم هنا --></div>
+    </main>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <!-- النصوص البرمجية (ترتيب التحميل مهمّ) -->
+  <script>
+/* =================================================================
+   db.js — طبقة تخزين البيانات (Local Storage)
+   تخزّن كل البيانات محلياً في المتصفّح، وتعمل بدون إنترنت أو خادم.
+   ================================================================= */
+(function (global) {
+  "use strict";
+
+  var PREFIX = "ihsan:";
+  var COLLECTIONS = ["beneficiaries", "donors", "aid", "donations", "expenses", "incomes"];
+  var SCHEMA_VERSION = 1;
+
+  function key(name) { return PREFIX + name; }
+
+  function read(name) {
+    try {
+      var raw = localStorage.getItem(key(name));
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.error("DB read error for " + name, e);
+      return [];
+    }
+  }
+
+  function write(name, arr) {
+    try {
+      localStorage.setItem(key(name), JSON.stringify(arr));
+      return true;
+    } catch (e) {
+      console.error("DB write error for " + name, e);
+      alert("تعذّر حفظ البيانات. قد تكون مساحة التخزين ممتلئة. يُرجى أخذ نسخة احتياطية.");
+      return false;
+    }
+  }
+
+  /* مُعرّف فريد بسيط ومقروء */
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  var DB = {
+    collections: COLLECTIONS,
+
+    all: function (name) { return read(name); },
+
+    get: function (name, id) {
+      var arr = read(name);
+      for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return arr[i];
+      return null;
+    },
+
+    /* يرجع السجلات المرتبطة بحقل معيّن (مثلاً مساعدات منتفع) */
+    where: function (name, field, value) {
+      return read(name).filter(function (r) { return r[field] === value; });
+    },
+
+    insert: function (name, obj) {
+      var arr = read(name);
+      obj.id = obj.id || uid();
+      obj.createdAt = obj.createdAt || new Date().toISOString();
+      obj.archived = obj.archived || false;
+      arr.push(obj);
+      write(name, arr);
+      return obj;
+    },
+
+    update: function (name, id, patch) {
+      var arr = read(name);
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].id === id) {
+          arr[i] = Object.assign({}, arr[i], patch, { id: id, updatedAt: new Date().toISOString() });
+          write(name, arr);
+          return arr[i];
+        }
+      }
+      return null;
+    },
+
+    remove: function (name, id) {
+      var arr = read(name).filter(function (r) { return r.id !== id; });
+      write(name, arr);
+    },
+
+    /* أرشفة بدل الحذف النهائي (حسب المواصفات: قائمة الأرشيف) */
+    setArchived: function (name, id, value) {
+      return DB.update(name, id, { archived: value });
+    },
+
+    count: function (name, includeArchived) {
+      var arr = read(name);
+      if (includeArchived) return arr.length;
+      return arr.filter(function (r) { return !r.archived; }).length;
+    },
+
+    /* مجموع حقل رقمي */
+    sum: function (name, field, filterFn) {
+      return read(name).reduce(function (s, r) {
+        if (filterFn && !filterFn(r)) return s;
+        var v = parseFloat(r[field]);
+        return s + (isNaN(v) ? 0 : v);
+      }, 0);
+    },
+
+    /* ----- النسخ الاحتياطي والاسترجاع ----- */
+    exportAll: function () {
+      var data = { schema: SCHEMA_VERSION, exportedAt: new Date().toISOString(), data: {} };
+      COLLECTIONS.forEach(function (c) { data.data[c] = read(c); });
+      data.settings = DB.settings();
+      return data;
+    },
+
+    importAll: function (payload, mode) {
+      // mode: "replace" | "merge"
+      if (!payload || !payload.data) throw new Error("ملف غير صالح");
+      COLLECTIONS.forEach(function (c) {
+        var incoming = payload.data[c] || [];
+        if (mode === "merge") {
+          var existing = read(c);
+          var ids = {};
+          existing.forEach(function (r) { ids[r.id] = true; });
+          incoming.forEach(function (r) { if (!ids[r.id]) existing.push(r); });
+          write(c, existing);
+        } else {
+          write(c, incoming);
+        }
+      });
+      if (payload.settings) DB.saveSettings(payload.settings);
+    },
+
+    clearAll: function () {
+      COLLECTIONS.forEach(function (c) { localStorage.removeItem(key(c)); });
+    },
+
+    /* ----- الإعدادات ----- */
+    settings: function () {
+      try {
+        var raw = localStorage.getItem(key("settings"));
+        return Object.assign({
+          orgName: "جمعية الإحسان الخيرية",
+          orgBranch: "بمنزل النور",
+          currency: "د.ت",
+          year: new Date().getFullYear()
+        }, raw ? JSON.parse(raw) : {});
+      } catch (e) { return { orgName: "جمعية الإحسان الخيرية", orgBranch: "بمنزل النور", currency: "د.ت" }; }
+    },
+    saveSettings: function (s) {
+      var merged = Object.assign(DB.settings(), s);
+      localStorage.setItem(key("settings"), JSON.stringify(merged));
+      return merged;
+    },
+
+    /* بذور تجريبية اختيارية لأول تشغيل */
+    isEmpty: function () {
+      return COLLECTIONS.every(function (c) { return read(c).length === 0; });
+    }
+  };
+
+  global.DB = DB;
+})(window);
+
+</script>
+  <script>
+/* =================================================================
+   utils.js — أدوات مساعدة عامة (تنسيق، نوافذ، تنبيهات، طباعة)
+   ================================================================= */
+(function (global) {
+  "use strict";
+
+  var U = {};
+
+  /* ----- تأمين النصوص ضد HTML ----- */
+  U.esc = function (s) {
+    if (s === null || s === undefined) return "";
+    return String(s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  };
+
+  /* ----- التاريخ ----- */
+  U.today = function () { return new Date().toISOString().slice(0, 10); };
+
+  U.fmtDate = function (iso) {
+    if (!iso) return "—";
+    var d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso);
+    if (isNaN(d)) return U.esc(iso);
+    var dd = ("0" + d.getDate()).slice(-2);
+    var mm = ("0" + (d.getMonth() + 1)).slice(-2);
+    return dd + "/" + mm + "/" + d.getFullYear();
+  };
+
+  U.age = function (iso) {
+    if (!iso) return "";
+    var d = new Date(iso); if (isNaN(d)) return "";
+    var diff = Date.now() - d.getTime();
+    var a = Math.floor(diff / (365.25 * 24 * 3600 * 1000));
+    return a >= 0 && a < 130 ? a : "";
+  };
+
+  /* ----- المال ----- */
+  U.fmtMoney = function (n) {
+    var v = parseFloat(n) || 0;
+    var cur = (global.DB && DB.settings().currency) || "د.ت";
+    return v.toLocaleString("ar-TN", { minimumFractionDigits: v % 1 ? 3 : 0, maximumFractionDigits: 3 }) + " " + cur;
+  };
+  U.fmtNum = function (n) { return (parseFloat(n) || 0).toLocaleString("ar-TN"); };
+
+  /* ----- الأحرف الأولى للصورة الرمزية ----- */
+  U.initials = function (name, last) {
+    var a = (name || "").trim().charAt(0);
+    var b = (last || "").trim().charAt(0);
+    return (a + b) || "؟";
+  };
+
+  /* ----- التنبيهات (Toast) ----- */
+  U.toast = function (msg, type) {
+    type = type || "success";
+    var wrap = document.getElementById("toastWrap");
+    if (!wrap) { wrap = document.createElement("div"); wrap.id = "toastWrap"; wrap.className = "toast-wrap"; document.body.appendChild(wrap); }
+    var icons = { success: "✅", error: "⛔", info: "ℹ️" };
+    var t = document.createElement("div");
+    t.className = "toast " + type;
+    t.innerHTML = '<span class="ti">' + (icons[type] || "✅") + '</span><span>' + U.esc(msg) + "</span>";
+    wrap.appendChild(t);
+    setTimeout(function () {
+      t.style.transition = "opacity .3s, transform .3s";
+      t.style.opacity = "0"; t.style.transform = "translateX(-10px)";
+      setTimeout(function () { t.remove(); }, 320);
+    }, 3200);
+  };
+
+  /* ----- النوافذ المنبثقة (Modal) ----- */
+  var overlay;
+  function ensureOverlay() {
+    if (overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.id = "modalOverlay";
+    overlay.addEventListener("mousedown", function (e) { if (e.target === overlay) U.closeModal(); });
+    document.body.appendChild(overlay);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") U.closeModal(); });
+    return overlay;
+  }
+
+  U.openModal = function (opts) {
+    ensureOverlay();
+    var wide = opts.wide ? " wide" : "";
+    overlay.innerHTML =
+      '<div class="modal' + wide + '" role="dialog" aria-modal="true">' +
+        '<div class="modal-head"><h3>' + U.esc(opts.title) + '</h3><div class="spacer"></div>' +
+          '<button class="modal-close" id="mClose" title="إغلاق">✕</button></div>' +
+        '<div class="modal-body" id="mBody">' + opts.body + "</div>" +
+        (opts.footer ? '<div class="modal-foot" id="mFoot">' + opts.footer + "</div>" : "") +
+      "</div>";
+    overlay.classList.add("open");
+    document.getElementById("mClose").onclick = U.closeModal;
+    // نمرّر عنصر النافذة بالكامل (الجسم + التذييل) ليتمكّن onOpen من ربط أزرار الحفظ/الإلغاء في التذييل
+    if (typeof opts.onOpen === "function") opts.onOpen(overlay.querySelector(".modal"));
+  };
+
+  U.closeModal = function () {
+    if (overlay) { overlay.classList.remove("open"); overlay.innerHTML = ""; }
+  };
+
+  /* ----- تأكيد ----- */
+  U.confirm = function (opts) {
+    var danger = opts.danger ? "danger" : "";
+    U.openModal({
+      title: opts.title || "تأكيد",
+      body: '<p style="font-size:15px;margin:4px 0 0">' + U.esc(opts.message) + "</p>",
+      footer:
+        '<button class="btn ' + danger + '" id="cfOk">' + U.esc(opts.okText || "نعم، متابعة") + "</button>" +
+        '<button class="btn secondary" id="cfCancel">إلغاء</button>',
+      onOpen: function () {
+        document.getElementById("cfOk").onclick = function () { U.closeModal(); opts.onOk && opts.onOk(); };
+        document.getElementById("cfCancel").onclick = U.closeModal;
+      }
+    });
+  };
+
+  /* ----- قراءة قيم النموذج ----- */
+  U.formData = function (root) {
+    var out = {};
+    root.querySelectorAll("[data-f]").forEach(function (el) {
+      var k = el.getAttribute("data-f");
+      if (el.type === "checkbox") out[k] = el.checked;
+      else if (el.type === "radio") { if (el.checked) out[k] = el.value; }
+      else out[k] = el.value.trim();
+    });
+    return out;
+  };
+
+  /* ----- بحث نصّي بسيط ----- */
+  U.match = function (obj, q, fields) {
+    if (!q) return true;
+    q = q.toLowerCase();
+    return fields.some(function (f) {
+      var v = obj[f]; return v && String(v).toLowerCase().indexOf(q) !== -1;
+    });
+  };
+
+  /* ----- debounce ----- */
+  U.debounce = function (fn, ms) {
+    var t; return function () { var a = arguments, c = this; clearTimeout(t); t = setTimeout(function () { fn.apply(c, a); }, ms || 200); };
+  };
+
+  /* ----- تنزيل ملف ----- */
+  U.download = function (filename, content, mime) {
+    var blob = new Blob(["﻿" + content], { type: (mime || "text/plain") + ";charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+  };
+
+  /* ----- تصدير CSV ----- */
+  U.toCSV = function (rows, headers) {
+    function cell(v) {
+      v = (v === null || v === undefined) ? "" : String(v);
+      if (/[",\n;]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+      return v;
+    }
+    var lines = [headers.map(function (h) { return cell(h.label); }).join(",")];
+    rows.forEach(function (r) {
+      lines.push(headers.map(function (h) { return cell(typeof h.get === "function" ? h.get(r) : r[h.key]); }).join(","));
+    });
+    return lines.join("\r\n");
+  };
+
+  /* ----- الطباعة (نافذة مستقلّة) ----- */
+  U.printHTML = function (title, innerHTML) {
+    var s = (global.DB && DB.settings()) || {};
+    var w = window.open("", "_blank", "width=900,height=700");
+    if (!w) { U.toast("يُرجى السماح بالنوافذ المنبثقة للطباعة", "error"); return; }
+    w.document.write(
+      '<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>' + U.esc(title) + "</title>" +
+      "<style>" +
+      "body{font-family:'Cairo','Segoe UI',Tahoma,sans-serif;color:#1f2a28;padding:28px;direction:rtl}" +
+      ".ph{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1b6b4f;padding-bottom:12px;margin-bottom:18px}" +
+      ".ph h1{font-size:20px;margin:0;color:#0f3d2e}.ph .b{color:#647067;font-size:13px}" +
+      ".ph .meta{text-align:left;font-size:12px;color:#647067}" +
+      "h2{font-size:17px;color:#14513c;border-bottom:1px solid #dfe7e2;padding-bottom:6px;margin:22px 0 10px}" +
+      "table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}" +
+      "th,td{border:1px solid #cdd8d1;padding:7px 9px;text-align:right}th{background:#eef6f1;color:#0f3d2e}" +
+      ".kv{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;font-size:14px;margin:6px 0}" +
+      ".kv div{padding:4px 0;border-bottom:1px dotted #dfe7e2}.kv b{color:#14513c}" +
+      ".sign{display:flex;justify-content:space-between;margin-top:48px;font-size:13px}" +
+      ".sign div{text-align:center;width:40%}.sign .line{border-top:1px solid #333;margin-top:40px;padding-top:5px}" +
+      ".foot{margin-top:30px;text-align:center;color:#9aa8a0;font-size:11px;border-top:1px solid #dfe7e2;padding-top:8px}" +
+      "@media print{body{padding:6px}}" +
+      "</style></head><body>" +
+      '<div class="ph"><div><h1>' + U.esc(s.orgName || "جمعية الإحسان الخيرية") + "</h1>" +
+        '<div class="b">' + U.esc(s.orgBranch || "") + "</div></div>" +
+        '<div class="meta">' + U.esc(title) + "<br>تاريخ الطباعة: " + U.fmtDate(U.today()) + "</div></div>" +
+      innerHTML +
+      '<div class="foot">وثيقة صادرة عن نظام إدارة ' + U.esc(s.orgName || "الجمعية") + "</div>" +
+      "</body></html>"
+    );
+    w.document.close();
+    setTimeout(function () { w.focus(); w.print(); }, 350);
+  };
+
+  global.U = U;
+})(window);
+
+</script>
+  <script>
+/* =================================================================
+   beneficiaries.js — المنتفعون / الحالات الاجتماعية (ملف العائلة)
+   ================================================================= */
+(function (global) {
+  "use strict";
+  var App = global.App || (global.App = { views: {} });
+  App.views = App.views || {};
+
+  var COLL = "beneficiaries";
+
+  var MARITAL = ["أعزب / عزباء", "متزوّج(ة)", "مطلّق(ة)", "أرمل(ة)"];
+  var FAMILY_TYPE = ["عادية", "أيتام", "أرملة معيلة", "مُسنّ بمفرده", "ذو إعاقة", "أخرى"];
+  var CATEGORY = ["قارة", "ظرفية", "عاجلة"];
+  var WORK = ["موظّف(ة)", "عامل(ة) مرسم", "عامل(ة) غير مرسم", "عاطل عن العمل", "متقاعد(ة)", "ربّة بيت"];
+  var HOUSING = ["ملك خاص", "إيجار", "تكفّل (مأوى)", "دائر / متنقّل"];
+  var COVERAGE = ["ضمان اجتماعي", "تعريفة منخفضة (أصفر)", "علاج مجاني (أبيض)", "بدون تغطية", "متقاعد"];
+
+  /* رقم ملف تلقائي تسلسلي: ع-YYYY-NNN */
+  function nextFileNo() {
+    var year = new Date().getFullYear();
+    var n = DB.all(COLL).reduce(function (m, b) {
+      var mt = (b.fileNo || "").match(/-(\d+)$/);
+      return mt ? Math.max(m, parseInt(mt[1], 10)) : m;
+    }, 0);
+    return "ع-" + year + "-" + ("000" + (n + 1)).slice(-3);
+  }
+
+  function fullName(b) {
+    return [b.firstName, b.lastName].filter(Boolean).join(" ") + (b.nickname ? " (" + b.nickname + ")" : "");
+  }
+
+  function catTag(b) {
+    var map = { "قارة": "green", "ظرفية": "amber", "عاجلة": "red" };
+    return b.category ? '<span class="tag ' + (map[b.category] || "gray") + '">' + U.esc(b.category) + "</span>" : "—";
+  }
+
+  /* ============ القائمة ============ */
+  App.views.beneficiaries = function (container, params) {
+    if (params && params.id) return detail(container, params.id);
+
+    var state = { q: "", filter: "active" };
+
+    function rows() {
+      var list = DB.all(COLL).filter(function (b) {
+        return state.filter === "archived" ? b.archived : !b.archived;
+      });
+      if (state.q) list = list.filter(function (b) {
+        return U.match(b, state.q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "address"]) || memberHits(b, state.q).length;
+      });
+      list.sort(function (a, b) { return (b.createdAt || "").localeCompare(a.createdAt || ""); });
+      return list;
+    }
+
+    function paint() {
+      var list = rows();
+      var body;
+      if (!list.length) {
+        body = '<div class="empty"><div class="e-ico">👨‍👩‍👧‍👦</div><h4>لا توجد عائلات مسجّلة</h4>' +
+          '<p>اضغط «إضافة عائلة» لإدراج أوّل حالة اجتماعية.</p></div>';
+      } else {
+        var tr = list.map(function (b) {
+          var aidCount = DB.where("aid", "beneficiaryId", b.id).length;
+          var hits = memberHits(b, state.q);
+          var hitChip = hits.length ? '<div style="margin-top:3px"><span class="tag green" style="font-size:11px">👤 يطابق فرداً: ' + U.esc(hits.join("، ")) + "</span></div>" : "";
+          return "<tr>" +
+            '<td><span class="tag gray">' + U.esc(b.fileNo || "—") + "</span></td>" +
+            '<td><a href="#" data-open="' + b.id + '" style="font-weight:800">' + U.esc(fullName(b)) + "</a>" + hitChip + "</td>" +
+            "<td>" + U.esc(b.phone || "—") + "</td>" +
+            "<td>" + U.esc(b.marital || "—") + "</td>" +
+            '<td style="text-align:center">' + U.fmtNum(b.members || childrenCount(b) + 1) + "</td>" +
+            "<td>" + catTag(b) + "</td>" +
+            '<td style="text-align:center">' + (aidCount ? '<span class="tag green">' + aidCount + "</span>" : '<span class="muted">0</span>') + "</td>" +
+            '<td><div class="t-actions">' +
+              '<button class="icon-btn" data-open="' + b.id + '" title="عرض الملف">👁️</button>' +
+              '<button class="icon-btn" data-edit="' + b.id + '" title="تعديل">✏️</button>' +
+              '<button class="icon-btn" data-print="' + b.id + '" title="طباعة">🖨️</button>' +
+              '<button class="icon-btn" data-arch="' + b.id + '" title="' + (b.archived ? "استرجاع" : "أرشفة") + '">' + (b.archived ? "♻️" : "📥") + "</button>" +
+              '<button class="icon-btn danger" data-del="' + b.id + '" title="حذف">🗑️</button>' +
+            "</div></td></tr>";
+        }).join("");
+        body =
+          '<div class="table-wrap"><table><thead><tr>' +
+          "<th>رقم الملف</th><th>الاسم واللقب</th><th>الهاتف</th><th>الحالة العائلية</th>" +
+          "<th>عدد الأفراد</th><th>الصنف</th><th>المساعدات</th><th>إجراءات</th>" +
+          "</tr></thead><tbody>" + tr + "</tbody></table></div>";
+      }
+
+      container.innerHTML =
+        '<div class="toolbar no-print">' +
+          '<div class="search"><span class="si">🔍</span><input id="bSearch" placeholder="بحث بالاسم، رقم الملف، ب.ت.و، الهاتف، أو اسم فرد…" value="' + U.esc(state.q) + '"></div>' +
+          '<div class="filter-pills">' +
+            '<button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">الحالات النشطة</button>' +
+            '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button>' +
+          "</div><div class='spacer' style='flex:1'></div>" +
+          '<button class="btn secondary" id="bExport"><span class="ico">⬇️</span> تصدير Excel</button>' +
+          '<button class="btn" id="bAdd"><span class="ico">＋</span> إضافة عائلة</button>' +
+        "</div>" + body;
+
+      var srch = document.getElementById("bSearch");
+      srch.oninput = U.debounce(function () { state.q = srch.value; paint(); keepFocus(); }, 180);
+      document.getElementById("bAdd").onclick = function () { openForm(null, paint); };
+      document.getElementById("bExport").onclick = exportCSV;
+      container.querySelectorAll("[data-flt]").forEach(function (el) {
+        el.onclick = function () { state.filter = el.getAttribute("data-flt"); state.q = ""; paint(); };
+      });
+      container.querySelectorAll("[data-open]").forEach(function (el) {
+        el.onclick = function (e) { e.preventDefault(); App.navigate("beneficiaries", { id: el.getAttribute("data-open") }); };
+      });
+      container.querySelectorAll("[data-edit]").forEach(function (el) {
+        el.onclick = function () { openForm(el.getAttribute("data-edit"), paint); };
+      });
+      container.querySelectorAll("[data-print]").forEach(function (el) {
+        el.onclick = function () { printFile(el.getAttribute("data-print")); };
+      });
+      container.querySelectorAll("[data-arch]").forEach(function (el) {
+        el.onclick = function () {
+          var b = DB.get(COLL, el.getAttribute("data-arch"));
+          DB.setArchived(COLL, b.id, !b.archived);
+          U.toast(b.archived ? "تمت إعادة الملف للحالات النشطة" : "تمت أرشفة الملف"); paint();
+        };
+      });
+      container.querySelectorAll("[data-del]").forEach(function (el) {
+        el.onclick = function () {
+          var b = DB.get(COLL, el.getAttribute("data-del"));
+          U.confirm({
+            title: "حذف الملف نهائياً", danger: true,
+            message: "سيتم حذف ملف «" + fullName(b) + "» وكل مساعداته نهائياً. لا يمكن التراجع. هل أنت متأكّد؟",
+            okText: "حذف نهائي",
+            onOk: function () {
+              DB.where("aid", "beneficiaryId", b.id).forEach(function (a) { DB.remove("aid", a.id); });
+              DB.remove(COLL, b.id); U.toast("تم حذف الملف", "info"); paint();
+            }
+          });
+        };
+      });
+
+      function keepFocus() { var s = document.getElementById("bSearch"); if (s) { s.focus(); s.selectionStart = s.value.length; } }
+    }
+
+    function exportCSV() {
+      var list = rows();
+      if (!list.length) return U.toast("لا توجد بيانات للتصدير", "info");
+      var headers = [
+        { label: "رقم الملف", key: "fileNo" }, { label: "الاسم", key: "firstName" },
+        { label: "اللقب", key: "lastName" }, { label: "الكنية", key: "nickname" },
+        { label: "ب.ت.و", key: "cin" }, { label: "الهاتف", key: "phone" },
+        { label: "تاريخ الولادة", key: "dob" }, { label: "الحالة العائلية", key: "marital" },
+        { label: "عدد الأفراد", get: function (b) { return b.members || childrenCount(b) + 1; } },
+        { label: "نوع العائلة", key: "familyType" }, { label: "الصنف", key: "category" },
+        { label: "العمل", key: "work" }, { label: "تقدير الدخل", key: "income" },
+        { label: "السكن", key: "housing" }, { label: "العنوان", key: "address" },
+        { label: "التغطية الاجتماعية", key: "coverage" }
+      ];
+      U.download("المنتفعون-" + U.today() + ".csv", U.toCSV(list, headers), "text/csv");
+      U.toast("تم تصدير ملف Excel (CSV)");
+    }
+
+    paint();
+  };
+
+  function childrenCount(b) { return (b.children || []).length; }
+
+  /* أسماء الأفراد (الأبناء/المكفولين) المطابقين لنصّ البحث داخل عائلة */
+  function memberHits(b, q) {
+    if (!q) return [];
+    q = q.toLowerCase();
+    return (b.children || [])
+      .filter(function (k) { return k.name && k.name.toLowerCase().indexOf(q) !== -1; })
+      .map(function (k) { return k.name; });
+  }
+
+  /* ============ تفاصيل الملف ============ */
+  function detail(container, id) {
+    var b = DB.get(COLL, id);
+    if (!b) { container.innerHTML = '<div class="empty"><div class="e-ico">❓</div><h4>الملف غير موجود</h4></div>'; return; }
+
+    function info(k, v) { return '<div class="info-item"><div class="k">' + k + '</div><div class="v">' + (v || "—") + "</div></div>"; }
+
+    function paint() {
+      b = DB.get(COLL, id);
+      var aid = DB.where("aid", "beneficiaryId", id).sort(function (a, c) { return (c.date || "").localeCompare(a.date || ""); });
+      var totalAid = aid.reduce(function (s, a) { return s + (parseFloat(a.amount) || 0); }, 0);
+
+      var aidRows = aid.length ? aid.map(function (a) {
+        return "<tr><td>" + U.fmtDate(a.date) + "</td><td>" + U.esc(a.type || "—") + "</td>" +
+          "<td>" + U.esc(a.occasion || "—") + '</td><td class="money out">' + U.fmtMoney(a.amount) + "</td>" +
+          '<td><div class="t-actions"><button class="icon-btn" data-aedit="' + a.id + '">✏️</button>' +
+          '<button class="icon-btn danger" data-adel="' + a.id + '">🗑️</button></div></td></tr>';
+      }).join("") : '<tr><td colspan="5" class="muted" style="text-align:center;padding:22px">لا توجد مساعدات مسجّلة بعد</td></tr>';
+
+      var kids = (b.children || []);
+      var kidsTable = kids.length ?
+        '<div class="table-wrap mt-20"><table><thead><tr><th>الاسم</th><th>تاريخ الولادة</th><th>العمر</th><th>المستوى الدراسي</th><th>العمل</th><th>الحالة الصحية</th></tr></thead><tbody>' +
+        kids.map(function (k) {
+          return "<tr><td>" + U.esc(k.name) + "</td><td>" + U.fmtDate(k.dob) + "</td><td>" + (k.dob ? U.age(k.dob) + " سنة" : "—") +
+            "</td><td>" + U.esc(k.grade || "—") + "</td><td>" + U.esc(k.work || "—") + "</td><td>" + U.esc(k.health || "عادية") + "</td></tr>";
+        }).join("") + "</tbody></table></div>" : "";
+
+      var healthBits = [];
+      if (b.chronic) healthBits.push('<span class="tag amber">مرض مزمن: ' + U.esc(b.chronicType || "غير محدّد") + "</span>");
+      if (b.disabled) healthBits.push('<span class="tag red">إعاقة: ' + U.esc(b.disabilityType || "غير محدّد") + "</span>");
+      if (b.pension) healthBits.push('<span class="tag green">ينتفع بجراية</span>');
+      if (!healthBits.length) healthBits.push('<span class="tag gray">لا يوجد</span>');
+
+      container.innerHTML =
+        '<div class="toolbar no-print">' +
+          '<button class="btn ghost" id="bBack">→ رجوع للقائمة</button><div class="spacer" style="flex:1"></div>' +
+          '<button class="btn secondary" id="bPrint"><span class="ico">🖨️</span> طباعة الملف</button>' +
+          '<button class="btn" id="bEdit"><span class="ico">✏️</span> تعديل</button>' +
+        "</div>" +
+        '<div class="detail-grid">' +
+          '<div class="card profile-card"><div class="card-body">' +
+            '<div class="profile-avatar">' + U.esc(U.initials(b.firstName, b.lastName)) + "</div>" +
+            '<div class="pname">' + U.esc(fullName(b)) + "</div>" +
+            '<div class="pfile">رقم الملف: ' + U.esc(b.fileNo || "—") + "</div>" +
+            '<div style="margin-top:10px">' + catTag(b) +
+              (b.familyType ? ' <span class="tag blue">' + U.esc(b.familyType) + "</span>" : "") +
+              (b.archived ? ' <span class="tag gray">مؤرشف</span>' : "") + "</div>" +
+            '<div style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px;text-align:right">' +
+              '<div class="info-list one">' +
+                info("الهاتف", U.esc(b.phone)) +
+                info("ب.ت.و", U.esc(b.cin)) +
+                info("تاريخ الولادة", b.dob ? U.fmtDate(b.dob) + (U.age(b.dob) ? " (" + U.age(b.dob) + " سنة)" : "") : "—") +
+                info("مكان الولادة", U.esc(b.birthPlace)) +
+                info("العنوان", U.esc(b.address) + (b.postal ? " — " + U.esc(b.postal) : "")) +
+              "</div></div>" +
+          "</div></div>" +
+
+          "<div>" +
+            '<div class="card mb-16"><div class="card-head"><h3>👨‍👩‍👧 الحالة العائلية والصحية</h3></div><div class="card-body">' +
+              '<div class="info-list">' +
+                info("الحالة العائلية", U.esc(b.marital)) +
+                info("عدد الأفراد", U.fmtNum(b.members || childrenCount(b) + 1)) +
+                info("نوع العائلة", U.esc(b.familyType)) +
+                info("الحالة الصحية", healthBits.join(" ")) +
+                info("الضمان الاجتماعي", U.esc(b.ssn) + (b.cardExpiry ? " — صلوحية: " + U.fmtDate(b.cardExpiry) : "")) +
+                info("التغطية الاجتماعية", U.esc(b.coverage)) +
+              "</div>" + kidsTable +
+            "</div></div>" +
+
+            '<div class="card mb-16"><div class="card-head"><h3>💼 الوضعية المادية والسكن</h3></div><div class="card-body">' +
+              '<div class="info-list">' +
+                info("العمل", U.esc(b.work)) +
+                info("تقدير الدخل الشهري", b.income ? U.fmtMoney(b.income) : "—") +
+                info("مداخيل أخرى", U.esc(b.otherIncome)) +
+                info("نوع السكن", U.esc(b.housing) + (b.rent ? " — كراء: " + U.fmtMoney(b.rent) : "")) +
+                info("العون المكلّف", U.esc(b.agent)) +
+                info("تاريخ الإدماج", b.joinDate ? U.fmtDate(b.joinDate) : U.fmtDate(b.createdAt)) +
+              "</div>" +
+              (b.notes ? '<div style="margin-top:12px"><div class="k" style="font-size:12px;color:var(--muted);font-weight:700">توصيف الحالة</div><div>' + U.esc(b.notes) + "</div></div>" : "") +
+            "</div></div>" +
+
+            '<div class="card"><div class="card-head"><h3>🎁 المساعدات الممنوحة</h3><div class="spacer"></div>' +
+              '<span class="tag green">المجموع: ' + U.fmtMoney(totalAid) + "</span>" +
+              '<button class="btn sm gold no-print" id="bAddAid" style="margin-inline-start:10px"><span class="ico">＋</span> إضافة مساعدة</button></div>' +
+              '<div class="table-wrap" style="border:none;box-shadow:none;border-radius:0"><table><thead><tr>' +
+              "<th>التاريخ</th><th>نوعية الإعانة</th><th>المناسبة</th><th>المقدار</th><th>إجراءات</th>" +
+              "</tr></thead><tbody>" + aidRows + "</tbody></table></div>" +
+            "</div>" +
+          "</div>" +
+        "</div>";
+
+      document.getElementById("bBack").onclick = function () { App.navigate("beneficiaries"); };
+      document.getElementById("bEdit").onclick = function () { openForm(id, paint); };
+      document.getElementById("bPrint").onclick = function () { printFile(id); };
+      document.getElementById("bAddAid").onclick = function () { App.aidForm(id, paint); };
+      container.querySelectorAll("[data-aedit]").forEach(function (el) {
+        el.onclick = function () { App.aidForm(id, paint, el.getAttribute("data-aedit")); };
+      });
+      container.querySelectorAll("[data-adel]").forEach(function (el) {
+        el.onclick = function () {
+          U.confirm({ title: "حذف المساعدة", danger: true, message: "حذف سجلّ المساعدة نهائياً؟", okText: "حذف",
+            onOk: function () { DB.remove("aid", el.getAttribute("data-adel")); U.toast("تم الحذف", "info"); paint(); } });
+        };
+      });
+    }
+    paint();
+  }
+
+  /* ============ النموذج ============ */
+  function chip(name, val, current) {
+    return '<label class="radio-chip"><input type="radio" data-f="' + name + '" name="' + name + '" value="' + U.esc(val) + '"' +
+      (current === val ? " checked" : "") + '><span>' + U.esc(val) + "</span></label>";
+  }
+
+  function openForm(id, after) {
+    var b = id ? DB.get(COLL, id) : {};
+    var isNew = !id;
+    var children = (b.children || []).slice();
+
+    function opts(list, sel) {
+      return '<option value="">— اختر —</option>' + list.map(function (o) {
+        return '<option' + (sel === o ? " selected" : "") + ">" + U.esc(o) + "</option>";
+      }).join("");
+    }
+
+    var body =
+      '<div class="form-grid">' +
+        '<div class="field"><label>رقم الملف</label><input data-f="fileNo" value="' + U.esc(b.fileNo || nextFileNo()) + '"></div>' +
+        '<div class="field"><label>العون المكلّف بالمسك</label><input data-f="agent" value="' + U.esc(b.agent || "") + '" placeholder="اسم العون"></div>' +
+      "</div>" +
+
+      '<fieldset class="fieldset"><legend>① المعطيات الشخصية</legend><div class="form-grid">' +
+        '<div class="field"><label>الاسم <span class="req">*</span></label><input data-f="firstName" value="' + U.esc(b.firstName || "") + '" required></div>' +
+        '<div class="field"><label>اللقب <span class="req">*</span></label><input data-f="lastName" value="' + U.esc(b.lastName || "") + '" required></div>' +
+        '<div class="field"><label>الكنية</label><input data-f="nickname" value="' + U.esc(b.nickname || "") + '" placeholder="إن وُجدت عند تشابه الأسماء"></div>' +
+        '<div class="field"><label>رقم ب.ت.و</label><input data-f="cin" value="' + U.esc(b.cin || "") + '" inputmode="numeric"></div>' +
+        '<div class="field"><label>تاريخ الولادة</label><input type="date" data-f="dob" value="' + U.esc(b.dob || "") + '"></div>' +
+        '<div class="field"><label>مكان الولادة</label><input data-f="birthPlace" value="' + U.esc(b.birthPlace || "") + '"></div>' +
+        '<div class="field"><label>الهاتف</label><input data-f="phone" value="' + U.esc(b.phone || "") + '" inputmode="tel"></div>' +
+      "</div></fieldset>" +
+
+      '<fieldset class="fieldset"><legend>② الضمان والتغطية الاجتماعية</legend><div class="form-grid">' +
+        '<div class="field"><label>رقم الضمان الاجتماعي</label><input data-f="ssn" value="' + U.esc(b.ssn || "") + '"></div>' +
+        '<div class="field"><label>صلوحية البطاقة (تاريخ الانتهاء)</label><input type="date" data-f="cardExpiry" value="' + U.esc(b.cardExpiry || "") + '"></div>' +
+        '<div class="field full"><label>نوع التغطية الاجتماعية</label><select data-f="coverage">' + opts(COVERAGE, b.coverage) + "</select></div>" +
+      "</div></fieldset>" +
+
+      '<fieldset class="fieldset"><legend>③ الوضعية العائلية</legend>' +
+        '<div class="field"><label>الحالة العائلية</label><div class="radio-row">' + MARITAL.map(function (m) { return chip("marital", m, b.marital); }).join("") + "</div></div>" +
+        '<div class="form-grid" style="margin-top:12px">' +
+          '<div class="field"><label>نوع العائلة</label><select data-f="familyType">' + opts(FAMILY_TYPE, b.familyType) + "</select></div>" +
+          '<div class="field"><label>صنف الحالة (الأولوية)</label><select data-f="category">' + opts(CATEGORY, b.category) + "</select></div>" +
+          '<div class="field"><label>عدد الأفراد بالعائلة</label><input type="number" min="1" data-f="members" value="' + U.esc(b.members || "") + '" placeholder="يُحسب تلقائياً إن تُرك فارغاً"></div>' +
+        "</div>" +
+        '<div style="margin-top:10px"><div class="row-between"><label style="font-size:13px;font-weight:700;color:var(--green-900)">جدول الأبناء / الأفراد المكفولين</label>' +
+          '<button type="button" class="btn sm secondary" id="addKid"><span class="ico">＋</span> إضافة سطر</button></div>' +
+          '<table class="children-table"><thead><tr><th style="width:24%">الاسم</th><th>تاريخ الولادة</th><th>المستوى الدراسي</th><th>العمل</th><th>الحالة الصحية</th><th style="width:34px"></th></tr></thead><tbody id="kidsBody"></tbody></table>' +
+        "</div>" +
+      "</fieldset>" +
+
+      '<fieldset class="fieldset"><legend>④ الحالة الصحية</legend>' +
+        '<div class="form-grid">' +
+          '<div class="field"><label class="check-inline"><input type="checkbox" data-f="chronic" id="chk_chronic"' + (b.chronic ? " checked" : "") + "> مريض مزمن</label>" +
+            '<input data-f="chronicType" id="chronicType" placeholder="نوع المرض: سكري، ضغط، تنفّس…" value="' + U.esc(b.chronicType || "") + '"></div>' +
+          '<div class="field"><label class="check-inline"><input type="checkbox" data-f="disabled" id="chk_dis"' + (b.disabled ? " checked" : "") + "> ذو إعاقة</label>" +
+            '<input data-f="disabilityType" id="disType" placeholder="نوع الإعاقة" value="' + U.esc(b.disabilityType || "") + '"></div>' +
+          '<div class="field full"><label class="check-inline"><input type="checkbox" data-f="pension"' + (b.pension ? " checked" : "") + "> ينتفع بجراية (منحة)</label></div>" +
+        "</div>" +
+      "</fieldset>" +
+
+      '<fieldset class="fieldset"><legend>⑤ الوضعية المادية</legend><div class="form-grid">' +
+        '<div class="field"><label>العمل / المهنة</label><select data-f="work">' + opts(WORK, b.work) + "</select></div>" +
+        '<div class="field"><label>تقدير الدخل الشهري</label><input type="number" step="0.001" min="0" data-f="income" value="' + U.esc(b.income || "") + '"></div>' +
+        '<div class="field full"><label>مداخيل أخرى</label><input data-f="otherIncome" value="' + U.esc(b.otherIncome || "") + '" placeholder="مصدر ومقدار المداخيل الأخرى"></div>' +
+      "</div></fieldset>" +
+
+      '<fieldset class="fieldset"><legend>⑥ السكن والعنوان</legend><div class="form-grid">' +
+        '<div class="field full"><label>العنوان</label><input data-f="address" value="' + U.esc(b.address || "") + '"></div>' +
+        '<div class="field"><label>الترقيم البريدي</label><input data-f="postal" value="' + U.esc(b.postal || "") + '" inputmode="numeric"></div>' +
+        '<div class="field"><label>نوع المسكن</label><select data-f="housing" id="housingSel">' + opts(HOUSING, b.housing) + "</select></div>" +
+        '<div class="field full" id="rentWrap" style="display:none"><label>تقدير ثمن الكراء (شهرياً)</label><input type="number" step="0.001" min="0" data-f="rent" value="' + U.esc(b.rent || "") + '"></div>' +
+      "</div></fieldset>" +
+
+      '<fieldset class="fieldset"><legend>⑦ الملف</legend><div class="form-grid">' +
+        '<div class="field"><label>تاريخ الإدماج / التحيين</label><input type="date" data-f="joinDate" value="' + U.esc(b.joinDate || U.today()) + '"></div>' +
+        '<div class="field full"><label>توصيف الحالة</label><textarea data-f="notes" placeholder="وصف موجز للحالة الاجتماعية والاحتياجات">' + U.esc(b.notes || "") + "</textarea></div>" +
+      "</div></fieldset>";
+
+    U.openModal({
+      title: isNew ? "إضافة عائلة / حالة اجتماعية" : "تعديل ملف: " + fullName(b),
+      wide: true,
+      body: body,
+      footer: '<button class="btn" id="bSave"><span class="ico">💾</span> حفظ الملف</button>' +
+              '<button class="btn secondary" id="bCancel">إلغاء</button>',
+      onOpen: function (root) {
+        var kidsBody = root.querySelector("#kidsBody");
+
+        function kidRow(k) {
+          k = k || {};
+          var tr = document.createElement("tr");
+          tr.innerHTML =
+            '<td><input class="kn" value="' + U.esc(k.name || "") + '"></td>' +
+            '<td><input type="date" class="kd" value="' + U.esc(k.dob || "") + '"></td>' +
+            '<td><input class="kg" value="' + U.esc(k.grade || "") + '" placeholder="تلميذ/سنة…"></td>' +
+            '<td><input class="kw" value="' + U.esc(k.work || "") + '"></td>' +
+            '<td><select class="kh"><option' + (!k.health || k.health === "عادية" ? " selected" : "") + ">عادية</option>" +
+              "<option" + (k.health === "مرض مزمن" ? " selected" : "") + ">مرض مزمن</option>" +
+              "<option" + (k.health === "إعاقة" ? " selected" : "") + ">إعاقة</option></select></td>" +
+            '<td style="text-align:center"><span class="x" title="حذف">✕</span></td>';
+          tr.querySelector(".x").onclick = function () { tr.remove(); };
+          return tr;
+        }
+        children.forEach(function (k) { kidsBody.appendChild(kidRow(k)); });
+        root.querySelector("#addKid").onclick = function () { kidsBody.appendChild(kidRow()); };
+
+        // إظهار حقل الكراء عند اختيار إيجار
+        var hs = root.querySelector("#housingSel"), rentWrap = root.querySelector("#rentWrap");
+        function toggleRent() { rentWrap.style.display = hs.value === "إيجار" ? "" : "none"; }
+        hs.onchange = toggleRent; toggleRent();
+
+        root.querySelector("#bCancel").onclick = U.closeModal;
+        root.querySelector("#bSave").onclick = function () {
+          var data = U.formData(root);
+          if (!data.firstName || !data.lastName) { U.toast("الاسم واللقب إجباريان", "error"); return; }
+          // قراءة الأبناء
+          data.children = Array.prototype.map.call(kidsBody.querySelectorAll("tr"), function (tr) {
+            return {
+              name: tr.querySelector(".kn").value.trim(),
+              dob: tr.querySelector(".kd").value,
+              grade: tr.querySelector(".kg").value.trim(),
+              work: tr.querySelector(".kw").value.trim(),
+              health: tr.querySelector(".kh").value
+            };
+          }).filter(function (k) { return k.name; });
+          if (!data.members) data.members = data.children.length + 1;
+
+          if (isNew) { DB.insert(COLL, data); U.toast("تمت إضافة العائلة بنجاح"); }
+          else { DB.update(COLL, id, data); U.toast("تم تحديث الملف"); }
+          U.closeModal();
+          after && after();
+        };
+      }
+    });
+  }
+
+  /* ============ طباعة الملف ============ */
+  function printFile(id) {
+    var b = DB.get(COLL, id);
+    if (!b) return;
+    var aid = DB.where("aid", "beneficiaryId", id);
+    function r(k, v) { return "<div><b>" + k + ":</b> " + U.esc(v || "—") + "</div>"; }
+    var kids = (b.children || []);
+    var kidsTbl = kids.length ?
+      "<h2>الأبناء / الأفراد المكفولون</h2><table><tr><th>الاسم</th><th>تاريخ الولادة</th><th>العمر</th><th>المستوى</th><th>الحالة الصحية</th></tr>" +
+      kids.map(function (k) { return "<tr><td>" + U.esc(k.name) + "</td><td>" + U.fmtDate(k.dob) + "</td><td>" + (k.dob ? U.age(k.dob) : "—") + "</td><td>" + U.esc(k.grade || "—") + "</td><td>" + U.esc(k.health || "عادية") + "</td></tr>"; }).join("") + "</table>" : "";
+    var aidTbl = aid.length ?
+      "<h2>المساعدات الممنوحة</h2><table><tr><th>التاريخ</th><th>النوع</th><th>المناسبة</th><th>المقدار</th></tr>" +
+      aid.map(function (a) { return "<tr><td>" + U.fmtDate(a.date) + "</td><td>" + U.esc(a.type) + "</td><td>" + U.esc(a.occasion || "—") + "</td><td>" + U.fmtMoney(a.amount) + "</td></tr>"; }).join("") + "</table>" : "";
+
+    var html =
+      "<h2>بطاقة الحالة الاجتماعية — رقم الملف: " + U.esc(b.fileNo || "—") + "</h2>" +
+      '<div class="kv">' +
+        r("الاسم واللقب", fullName(b)) + r("ب.ت.و", b.cin) +
+        r("تاريخ ومكان الولادة", U.fmtDate(b.dob) + " — " + (b.birthPlace || "")) + r("الهاتف", b.phone) +
+        r("الحالة العائلية", b.marital) + r("عدد الأفراد", b.members || kids.length + 1) +
+        r("نوع العائلة", b.familyType) + r("صنف الحالة", b.category) +
+        r("الضمان الاجتماعي", b.ssn) + r("صلوحية البطاقة", b.cardExpiry ? U.fmtDate(b.cardExpiry) : "—") +
+        r("التغطية الاجتماعية", b.coverage) + r("الحالة الصحية", [b.chronic ? "مرض مزمن (" + (b.chronicType || "") + ")" : "", b.disabled ? "إعاقة (" + (b.disabilityType || "") + ")" : "", b.pension ? "ينتفع بجراية" : ""].filter(Boolean).join("، ") || "عادية") +
+        r("العمل", b.work) + r("تقدير الدخل", b.income ? U.fmtMoney(b.income) : "—") +
+        r("السكن", b.housing + (b.rent ? " — كراء " + U.fmtMoney(b.rent) : "")) + r("العنوان", (b.address || "") + " " + (b.postal || "")) +
+      "</div>" +
+      (b.notes ? "<h2>توصيف الحالة</h2><p>" + U.esc(b.notes) + "</p>" : "") +
+      kidsTbl + aidTbl +
+      '<div class="sign"><div><div class="line">إمضاء العون المكلّف</div></div><div><div class="line">إمضاء رئيس اللجنة الاجتماعية</div></div></div>';
+
+    U.printHTML("بطاقة حالة اجتماعية — " + fullName(b), html);
+  }
+
+  App.beneficiaryFullName = fullName;
+})(window);
+
+</script>
+  <script>
+/* =================================================================
+   donors.js — المتبرعون وتبرعاتهم
+   ================================================================= */
+(function (global) {
+  "use strict";
+  var App = global.App || (global.App = { views: {} });
+  App.views = App.views || {};
+
+  var COLL = "donors";
+  var DON = "donations";
+  var DONOR_TYPE = ["فرد", "عائلة", "مؤسسة / شركة", "جمعية", "محسن مجهول"];
+  var AID_KINDS = ["مالي", "عيني (مواد غذائية)", "ملابس", "أدوية", "أضحية", "كسوة العيد", "قفّة رمضان", "أخرى"];
+
+  function fullName(d) { return [d.firstName, d.lastName].filter(Boolean).join(" ") || "متبرّع"; }
+  function donorTotal(id) { return DB.where(DON, "donorId", id).reduce(function (s, x) { return s + (parseFloat(x.amount) || 0); }, 0); }
+
+  /* ============ القائمة ============ */
+  App.views.donors = function (container, params) {
+    if (params && params.id) return detail(container, params.id);
+    var state = { q: "", filter: "active" };
+
+    function rows() {
+      var list = DB.all(COLL).filter(function (d) { return state.filter === "archived" ? d.archived : !d.archived; });
+      if (state.q) list = list.filter(function (d) { return U.match(d, state.q, ["firstName", "lastName", "phone", "type"]); });
+      list.sort(function (a, b) { return (b.createdAt || "").localeCompare(a.createdAt || ""); });
+      return list;
+    }
+
+    function paint() {
+      var list = rows();
+      var body;
+      if (!list.length) {
+        body = '<div class="empty"><div class="e-ico">🤝</div><h4>لا يوجد متبرعون مسجّلون</h4><p>اضغط «إضافة متبرّع» للبدء.</p></div>';
+      } else {
+        var tr = list.map(function (d) {
+          var dons = DB.where(DON, "donorId", d.id);
+          var last = dons.sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); })[0];
+          return "<tr>" +
+            '<td><a href="#" data-open="' + d.id + '" style="font-weight:800">' + U.esc(fullName(d)) + "</a></td>" +
+            '<td><span class="tag blue">' + U.esc(d.type || "فرد") + "</span></td>" +
+            "<td>" + U.esc(d.phone || "—") + "</td>" +
+            '<td style="text-align:center">' + dons.length + "</td>" +
+            '<td class="money in">' + U.fmtMoney(donorTotal(d.id)) + "</td>" +
+            "<td>" + (last ? U.fmtDate(last.date) : "—") + "</td>" +
+            '<td><div class="t-actions">' +
+              '<button class="icon-btn" data-open="' + d.id + '" title="عرض">👁️</button>' +
+              '<button class="icon-btn" data-edit="' + d.id + '" title="تعديل">✏️</button>' +
+              '<button class="icon-btn" data-arch="' + d.id + '" title="' + (d.archived ? "استرجاع" : "أرشفة") + '">' + (d.archived ? "♻️" : "📥") + "</button>" +
+              '<button class="icon-btn danger" data-del="' + d.id + '" title="حذف">🗑️</button>' +
+            "</div></td></tr>";
+        }).join("");
+        body = '<div class="table-wrap"><table><thead><tr><th>الاسم واللقب</th><th>الصفة</th><th>الهاتف</th><th>عدد التبرعات</th><th>مجموع التبرعات</th><th>آخر تبرّع</th><th>إجراءات</th></tr></thead><tbody>' + tr + "</tbody></table></div>";
+      }
+
+      container.innerHTML =
+        '<div class="toolbar no-print">' +
+          '<div class="search"><span class="si">🔍</span><input id="dSearch" placeholder="بحث باسم المتبرّع أو الهاتف…" value="' + U.esc(state.q) + '"></div>' +
+          '<div class="filter-pills"><button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">النشطون</button>' +
+          '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button></div>' +
+          '<div class="spacer" style="flex:1"></div>' +
+          '<button class="btn secondary" id="dExport"><span class="ico">⬇️</span> تصدير</button>' +
+          '<button class="btn" id="dAdd"><span class="ico">＋</span> إضافة متبرّع</button>' +
+        "</div>" + body;
+
+      var s = document.getElementById("dSearch");
+      s.oninput = U.debounce(function () { state.q = s.value; paint(); var n = document.getElementById("dSearch"); if (n) { n.focus(); n.selectionStart = n.value.length; } }, 180);
+      document.getElementById("dAdd").onclick = function () { openForm(null, paint); };
+      document.getElementById("dExport").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات", "info");
+        var headers = [{ label: "الاسم", key: "firstName" }, { label: "اللقب", key: "lastName" }, { label: "الصفة", key: "type" },
+          { label: "الهاتف", key: "phone" }, { label: "عدد التبرعات", get: function (d) { return DB.where(DON, "donorId", d.id).length; } },
+          { label: "مجموع التبرعات", get: function (d) { return donorTotal(d.id); } }];
+        U.download("المتبرعون-" + U.today() + ".csv", U.toCSV(list, headers), "text/csv"); U.toast("تم التصدير");
+      };
+      container.querySelectorAll("[data-flt]").forEach(function (el) { el.onclick = function () { state.filter = el.getAttribute("data-flt"); paint(); }; });
+      container.querySelectorAll("[data-open]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("donors", { id: el.getAttribute("data-open") }); }; });
+      container.querySelectorAll("[data-edit]").forEach(function (el) { el.onclick = function () { openForm(el.getAttribute("data-edit"), paint); }; });
+      container.querySelectorAll("[data-arch]").forEach(function (el) {
+        el.onclick = function () { var d = DB.get(COLL, el.getAttribute("data-arch")); DB.setArchived(COLL, d.id, !d.archived); U.toast(d.archived ? "تمت الإعادة" : "تمت الأرشفة"); paint(); };
+      });
+      container.querySelectorAll("[data-del]").forEach(function (el) {
+        el.onclick = function () {
+          var d = DB.get(COLL, el.getAttribute("data-del"));
+          U.confirm({ title: "حذف المتبرّع", danger: true, message: "حذف «" + fullName(d) + "» وكل تبرعاته نهائياً؟", okText: "حذف نهائي",
+            onOk: function () { DB.where(DON, "donorId", d.id).forEach(function (x) { DB.remove(DON, x.id); }); DB.remove(COLL, d.id); U.toast("تم الحذف", "info"); paint(); } });
+        };
+      });
+    }
+    paint();
+  };
+
+  /* ============ التفاصيل ============ */
+  function detail(container, id) {
+    function paint() {
+      var d = DB.get(COLL, id);
+      if (!d) { container.innerHTML = '<div class="empty"><div class="e-ico">❓</div><h4>المتبرّع غير موجود</h4></div>'; return; }
+      var dons = DB.where(DON, "donorId", id).sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+      var total = donorTotal(id);
+      var rows = dons.length ? dons.map(function (x) {
+        return "<tr><td>" + U.fmtDate(x.date) + "</td><td>" + U.esc(x.type || "—") + "</td><td>" + U.esc(x.occasion || "—") +
+          '</td><td class="money in">' + U.fmtMoney(x.amount) + '</td><td><div class="t-actions">' +
+          '<button class="icon-btn" data-dedit="' + x.id + '">✏️</button><button class="icon-btn danger" data-ddel="' + x.id + '">🗑️</button></div></td></tr>';
+      }).join("") : '<tr><td colspan="5" class="muted" style="text-align:center;padding:22px">لا توجد تبرّعات مسجّلة بعد</td></tr>';
+
+      container.innerHTML =
+        '<div class="toolbar no-print"><button class="btn ghost" id="dBack">→ رجوع</button><div class="spacer" style="flex:1"></div>' +
+          '<button class="btn secondary" id="dPrint"><span class="ico">🖨️</span> طباعة</button>' +
+          '<button class="btn" id="dEdit"><span class="ico">✏️</span> تعديل</button></div>' +
+        '<div class="detail-grid">' +
+          '<div class="card profile-card"><div class="card-body">' +
+            '<div class="profile-avatar" style="background:linear-gradient(135deg,var(--gold-500),var(--gold-600))">' + U.esc(U.initials(d.firstName, d.lastName)) + "</div>" +
+            '<div class="pname">' + U.esc(fullName(d)) + '</div><div class="pfile">' + U.esc(d.type || "فرد") + "</div>" +
+            '<div style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px;text-align:right"><div class="info-list one">' +
+              '<div class="info-item"><div class="k">الهاتف</div><div class="v">' + U.esc(d.phone || "—") + "</div></div>" +
+              '<div class="info-item"><div class="k">العنوان</div><div class="v">' + U.esc(d.address || "—") + "</div></div>" +
+              '<div class="info-item"><div class="k">مجموع التبرعات</div><div class="v money in">' + U.fmtMoney(total) + "</div></div>" +
+              (d.notes ? '<div class="info-item"><div class="k">ملاحظات</div><div class="v">' + U.esc(d.notes) + "</div></div>" : "") +
+            "</div></div></div></div>" +
+          '<div class="card"><div class="card-head"><h3>🎁 سجلّ التبرعات</h3><div class="spacer"></div>' +
+            '<button class="btn sm gold no-print" id="addDon"><span class="ico">＋</span> تسجيل تبرّع</button></div>' +
+            '<div class="table-wrap" style="border:none;box-shadow:none;border-radius:0"><table><thead><tr><th>التاريخ</th><th>نوعية الإعانة</th><th>المناسبة</th><th>المقدار</th><th>إجراءات</th></tr></thead><tbody>' + rows + "</tbody></table></div></div>" +
+        "</div>";
+
+      document.getElementById("dBack").onclick = function () { App.navigate("donors"); };
+      document.getElementById("dEdit").onclick = function () { openForm(id, paint); };
+      document.getElementById("dPrint").onclick = function () { printDonor(id); };
+      document.getElementById("addDon").onclick = function () { App.donationForm(id, paint); };
+      container.querySelectorAll("[data-dedit]").forEach(function (el) { el.onclick = function () { App.donationForm(id, paint, el.getAttribute("data-dedit")); }; });
+      container.querySelectorAll("[data-ddel]").forEach(function (el) {
+        el.onclick = function () { U.confirm({ title: "حذف التبرّع", danger: true, message: "حذف سجلّ التبرّع؟", okText: "حذف",
+          onOk: function () { DB.remove(DON, el.getAttribute("data-ddel")); U.toast("تم الحذف", "info"); paint(); } }); };
+      });
+    }
+    paint();
+  }
+
+  /* ============ نموذج المتبرّع ============ */
+  function openForm(id, after) {
+    var d = id ? DB.get(COLL, id) : {};
+    var isNew = !id;
+    var typeOpts = DONOR_TYPE.map(function (t) { return '<option' + (d.type === t ? " selected" : "") + ">" + U.esc(t) + "</option>"; }).join("");
+    U.openModal({
+      title: isNew ? "إضافة متبرّع" : "تعديل المتبرّع",
+      body: '<div class="form-grid">' +
+        '<div class="field"><label>الاسم <span class="req">*</span></label><input data-f="firstName" value="' + U.esc(d.firstName || "") + '"></div>' +
+        '<div class="field"><label>اللقب</label><input data-f="lastName" value="' + U.esc(d.lastName || "") + '"></div>' +
+        '<div class="field"><label>الصفة</label><select data-f="type"><option value="">— اختر —</option>' + typeOpts + "</select></div>" +
+        '<div class="field"><label>الهاتف</label><input data-f="phone" value="' + U.esc(d.phone || "") + '" inputmode="tel"></div>' +
+        '<div class="field full"><label>العنوان</label><input data-f="address" value="' + U.esc(d.address || "") + '"></div>' +
+        '<div class="field full"><label>ملاحظات</label><textarea data-f="notes">' + U.esc(d.notes || "") + "</textarea></div>" +
+      "</div>",
+      footer: '<button class="btn" id="dSave"><span class="ico">💾</span> حفظ</button><button class="btn secondary" id="dCancel">إلغاء</button>',
+      onOpen: function (root) {
+        root.querySelector("#dCancel").onclick = U.closeModal;
+        root.querySelector("#dSave").onclick = function () {
+          var data = U.formData(root);
+          if (!data.firstName) { U.toast("الاسم إجباري", "error"); return; }
+          if (isNew) { DB.insert(COLL, data); U.toast("تمت إضافة المتبرّع"); }
+          else { DB.update(COLL, id, data); U.toast("تم التحديث"); }
+          U.closeModal(); after && after();
+        };
+      }
+    });
+  }
+
+  /* ============ نموذج التبرّع (مشترك) ============ */
+  App.donationForm = function (donorId, after, donationId) {
+    var x = donationId ? DB.get(DON, donationId) : {};
+    var isNew = !donationId;
+    // اختيار المتبرّع إن لم يُمرَّر
+    var needPick = !donorId;
+    var donorsList = DB.all(COLL).filter(function (d) { return !d.archived; });
+    var pickHtml = needPick ? '<div class="field full"><label>المتبرّع <span class="req">*</span></label><select data-f="donorId"><option value="">— اختر المتبرّع —</option>' +
+      donorsList.map(function (d) { return '<option value="' + d.id + '">' + U.esc(fullName(d)) + "</option>"; }).join("") + "</select></div>" : "";
+    var kindOpts = AID_KINDS.map(function (k) { return '<option' + (x.type === k ? " selected" : "") + ">" + U.esc(k) + "</option>"; }).join("");
+
+    U.openModal({
+      title: isNew ? "تسجيل تبرّع جديد" : "تعديل التبرّع",
+      body: '<div class="form-grid">' + pickHtml +
+        '<div class="field"><label>التاريخ</label><input type="date" data-f="date" value="' + U.esc(x.date || U.today()) + '"></div>' +
+        '<div class="field"><label>المقدار</label><input type="number" step="0.001" min="0" data-f="amount" value="' + U.esc(x.amount || "") + '"></div>' +
+        '<div class="field"><label>نوعية الإعانة</label><select data-f="type"><option value="">— اختر —</option>' + kindOpts + "</select></div>" +
+        '<div class="field"><label>المناسبة</label><input data-f="occasion" value="' + U.esc(x.occasion || "") + '" placeholder="رمضان، العيد، عاشوراء…"></div>' +
+        '<div class="field full"><label>ملاحظة</label><input data-f="note" value="' + U.esc(x.note || "") + '"></div>' +
+      "</div>",
+      footer: '<button class="btn" id="xSave"><span class="ico">💾</span> حفظ</button><button class="btn secondary" id="xCancel">إلغاء</button>',
+      onOpen: function (root) {
+        root.querySelector("#xCancel").onclick = U.closeModal;
+        root.querySelector("#xSave").onclick = function () {
+          var data = U.formData(root);
+          var did = donorId || data.donorId;
+          if (!did) { U.toast("يُرجى اختيار المتبرّع", "error"); return; }
+          if (!data.amount && !data.type) { U.toast("أدخل المقدار أو نوعية الإعانة", "error"); return; }
+          data.donorId = did;
+          if (isNew) { DB.insert(DON, data); U.toast("تم تسجيل التبرّع"); }
+          else { DB.update(DON, donationId, data); U.toast("تم التحديث"); }
+          U.closeModal(); after && after();
+        };
+      }
+    });
+  };
+
+  function printDonor(id) {
+    var d = DB.get(COLL, id);
+    var dons = DB.where(DON, "donorId", id);
+    var tbl = "<table><tr><th>التاريخ</th><th>النوع</th><th>المناسبة</th><th>المقدار</th></tr>" +
+      dons.map(function (x) { return "<tr><td>" + U.fmtDate(x.date) + "</td><td>" + U.esc(x.type) + "</td><td>" + U.esc(x.occasion || "—") + "</td><td>" + U.fmtMoney(x.amount) + "</td></tr>"; }).join("") +
+      '<tr><th colspan="3">المجموع</th><th>' + U.fmtMoney(donorTotal(id)) + "</th></tr></table>";
+    U.printHTML("سجلّ تبرّعات — " + fullName(d),
+      "<h2>المتبرّع: " + U.esc(fullName(d)) + "</h2><div class='kv'><div><b>الصفة:</b> " + U.esc(d.type || "—") + "</div><div><b>الهاتف:</b> " + U.esc(d.phone || "—") + "</div></div><h2>التبرعات</h2>" + tbl);
+  }
+
+  App.donorFullName = fullName;
+})(window);
+
+</script>
+  <script>
+/* =================================================================
+   finance.js — المساعدات، التبرعات، المصاريف، المداخيل (الشأن المالي)
+   ================================================================= */
+(function (global) {
+  "use strict";
+  var App = global.App || (global.App = { views: {} });
+  App.views = App.views || {};
+
+  var AID_KINDS = ["مالي", "عيني (مواد غذائية)", "ملابس", "أدوية", "أضحية", "كسوة العيد", "قفّة رمضان", "كراس ومستلزمات مدرسية", "أخرى"];
+  var EXP_CAT = ["مساعدات مباشرة", "كراء", "فواتير (ماء/كهرباء)", "نقل", "مصاريف إدارية", "صيانة", "أخرى"];
+  var INC_SRC = ["تبرعات نقدية", "اشتراكات الأعضاء", "هبات", "دعم رسمي", "أنشطة وحملات", "أخرى"];
+
+  function bName(id) { var b = DB.get("beneficiaries", id); return b ? App.beneficiaryFullName(b) : "—"; }
+  function dName(id) { var d = DB.get("donors", id); return d ? App.donorFullName(d) : "—"; }
+
+  /* ============ نموذج المساعدة (مشترك مع ملف المنتفع) ============ */
+  App.aidForm = function (beneficiaryId, after, aidId) {
+    var a = aidId ? DB.get("aid", aidId) : {};
+    var isNew = !aidId;
+    var needPick = !beneficiaryId;
+    var benList = DB.all("beneficiaries").filter(function (b) { return !b.archived; });
+    var pick = needPick ? '<div class="field full"><label>المنتفع <span class="req">*</span></label><select data-f="beneficiaryId"><option value="">— اختر العائلة —</option>' +
+      benList.map(function (b) { return '<option value="' + b.id + '">' + U.esc(App.beneficiaryFullName(b)) + " — " + U.esc(b.fileNo || "") + "</option>"; }).join("") + "</select></div>" : "";
+    var kinds = AID_KINDS.map(function (k) { return '<option' + (a.type === k ? " selected" : "") + ">" + U.esc(k) + "</option>"; }).join("");
+
+    U.openModal({
+      title: isNew ? "إضافة مساعدة" : "تعديل المساعدة",
+      body: '<div class="form-grid">' + pick +
+        '<div class="field"><label>التاريخ</label><input type="date" data-f="date" value="' + U.esc(a.date || U.today()) + '"></div>' +
+        '<div class="field"><label>المقدار</label><input type="number" step="0.001" min="0" data-f="amount" value="' + U.esc(a.amount || "") + '"></div>' +
+        '<div class="field"><label>نوعية الإعانة</label><select data-f="type"><option value="">— اختر —</option>' + kinds + "</select></div>" +
+        '<div class="field"><label>المناسبة</label><input data-f="occasion" value="' + U.esc(a.occasion || "") + '" placeholder="رمضان، العيد، الدخول المدرسي…"></div>' +
+        '<div class="field full"><label>ملاحظة</label><input data-f="note" value="' + U.esc(a.note || "") + '"></div>' +
+      "</div>",
+      footer: '<button class="btn" id="aSave"><span class="ico">💾</span> حفظ</button><button class="btn secondary" id="aCancel">إلغاء</button>',
+      onOpen: function (root) {
+        root.querySelector("#aCancel").onclick = U.closeModal;
+        root.querySelector("#aSave").onclick = function () {
+          var data = U.formData(root);
+          var bid = beneficiaryId || data.beneficiaryId;
+          if (!bid) { U.toast("يُرجى اختيار المنتفع", "error"); return; }
+          if (!data.amount && !data.type) { U.toast("أدخل المقدار أو نوعية الإعانة", "error"); return; }
+          data.beneficiaryId = bid;
+          if (isNew) { DB.insert("aid", data); U.toast("تمت إضافة المساعدة"); }
+          else { DB.update("aid", aidId, data); U.toast("تم التحديث"); }
+          U.closeModal(); after && after();
+        };
+      }
+    });
+  };
+
+  /* ============ نموذج عام (مصروف / مدخول) ============ */
+  function txForm(coll, opts, after, txId) {
+    var x = txId ? DB.get(coll, txId) : {};
+    var isNew = !txId;
+    var catOpts = opts.cats.map(function (c) { return '<option' + (x[opts.catKey] === c ? " selected" : "") + ">" + U.esc(c) + "</option>"; }).join("");
+    U.openModal({
+      title: (isNew ? "إضافة " : "تعديل ") + opts.title,
+      body: '<div class="form-grid">' +
+        '<div class="field"><label>التاريخ</label><input type="date" data-f="date" value="' + U.esc(x.date || U.today()) + '"></div>' +
+        '<div class="field"><label>المقدار <span class="req">*</span></label><input type="number" step="0.001" min="0" data-f="amount" value="' + U.esc(x.amount || "") + '"></div>' +
+        '<div class="field full"><label>' + opts.labelText + '</label><input data-f="label" value="' + U.esc(x.label || "") + '"></div>' +
+        '<div class="field full"><label>' + opts.catLabel + '</label><select data-f="' + opts.catKey + '"><option value="">— اختر —</option>' + catOpts + "</select></div>" +
+      "</div>",
+      footer: '<button class="btn" id="txSave"><span class="ico">💾</span> حفظ</button><button class="btn secondary" id="txCancel">إلغاء</button>',
+      onOpen: function (root) {
+        root.querySelector("#txCancel").onclick = U.closeModal;
+        root.querySelector("#txSave").onclick = function () {
+          var data = U.formData(root);
+          if (!data.amount) { U.toast("المقدار إجباري", "error"); return; }
+          if (isNew) { DB.insert(coll, data); U.toast("تمت الإضافة"); }
+          else { DB.update(coll, txId, data); U.toast("تم التحديث"); }
+          U.closeModal(); after && after();
+        };
+      }
+    });
+  }
+  App.expenseForm = function (after, id) {
+    txForm("expenses", { title: "مصروف", labelText: "البيان / الوصف", catLabel: "الفئة", catKey: "category", cats: EXP_CAT }, after, id);
+  };
+  App.incomeForm = function (after, id) {
+    txForm("incomes", { title: "مدخول", labelText: "البيان / الوصف", catLabel: "المصدر", catKey: "source", cats: INC_SRC }, after, id);
+  };
+
+  /* ============ العرض المالي (تبويبات) ============ */
+  App.views.finance = function (container, params) {
+    var tab = (params && params.tab) || "aid";
+
+    function totalsBar() {
+      var inflow = DB.sum("donations", "amount") + DB.sum("incomes", "amount");
+      var outflow = DB.sum("aid", "amount") + DB.sum("expenses", "amount");
+      var bal = inflow - outflow;
+      return '<div class="cards grid-3 mb-16">' +
+        stat("green", "📈", "إجمالي المداخيل (تبرعات + مداخيل)", U.fmtMoney(inflow)) +
+        stat("red", "📉", "إجمالي المصاريف (مساعدات + مصاريف)", U.fmtMoney(outflow)) +
+        stat(bal >= 0 ? "gold" : "red", "⚖️", "الرصيد الصافي", U.fmtMoney(bal)) +
+        "</div>";
+    }
+    function stat(cls, ico, label, val) {
+      return '<div class="stat ' + cls + '"><div class="ico-bg">' + ico + '</div><div class="meta"><div class="label">' + label + '</div><div class="value" style="font-size:22px">' + val + "</div></div></div>";
+    }
+
+    function paint() {
+      var tabs = [
+        { k: "aid", t: "🎁 المساعدات الممنوحة" },
+        { k: "donations", t: "🤝 التبرعات الواردة" },
+        { k: "expenses", t: "📉 المصاريف" },
+        { k: "incomes", t: "📈 المداخيل" }
+      ];
+      container.innerHTML = totalsBar() +
+        '<div class="sub-tabs no-print">' + tabs.map(function (x) {
+          return '<button class="' + (tab === x.k ? "active" : "") + '" data-tab="' + x.k + '">' + x.t + "</button>";
+        }).join("") + "</div><div id='finBody'></div>";
+
+      container.querySelectorAll("[data-tab]").forEach(function (el) {
+        el.onclick = function () { tab = el.getAttribute("data-tab"); paint(); };
+      });
+
+      var body = container.querySelector("#finBody");
+      if (tab === "aid") renderAid(body);
+      else if (tab === "donations") renderDonations(body);
+      else if (tab === "expenses") renderTx(body, "expenses", "مصروف", "category", "الفئة", "out", App.expenseForm);
+      else renderTx(body, "incomes", "مدخول", "source", "المصدر", "in", App.incomeForm);
+    }
+
+    function renderAid(body) {
+      var list = DB.all("aid").sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+      var total = list.reduce(function (s, a) { return s + (parseFloat(a.amount) || 0); }, 0);
+      var rows = list.length ? list.map(function (a) {
+        return "<tr><td>" + U.fmtDate(a.date) + '</td><td><a href="#" data-b="' + a.beneficiaryId + '" style="font-weight:700">' + U.esc(bName(a.beneficiaryId)) + "</a></td>" +
+          "<td>" + U.esc(a.type || "—") + "</td><td>" + U.esc(a.occasion || "—") + '</td><td class="money out">' + U.fmtMoney(a.amount) + "</td>" +
+          '<td><div class="t-actions"><button class="icon-btn" data-e="' + a.id + '">✏️</button><button class="icon-btn danger" data-x="' + a.id + '">🗑️</button></div></td></tr>';
+      }).join("") : empty("🎁", "لا توجد مساعدات مسجّلة");
+      body.innerHTML = bar("إضافة مساعدة", "addBtn", "gold") +
+        wrapTable(["التاريخ", "المنتفع", "نوعية الإعانة", "المناسبة", "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), "out", list.length);
+      body.querySelector("#addBtn").onclick = function () { App.aidForm(null, paint); };
+      body.querySelectorAll("[data-b]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("beneficiaries", { id: el.getAttribute("data-b") }); }; });
+      body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { App.aidForm(null, paint, el.getAttribute("data-e")); }; });
+      body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm("aid", el.getAttribute("data-x"), paint); }; });
+    }
+
+    function renderDonations(body) {
+      var list = DB.all("donations").sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+      var total = list.reduce(function (s, a) { return s + (parseFloat(a.amount) || 0); }, 0);
+      var rows = list.length ? list.map(function (a) {
+        return "<tr><td>" + U.fmtDate(a.date) + '</td><td><a href="#" data-d="' + a.donorId + '" style="font-weight:700">' + U.esc(dName(a.donorId)) + "</a></td>" +
+          "<td>" + U.esc(a.type || "—") + "</td><td>" + U.esc(a.occasion || "—") + '</td><td class="money in">' + U.fmtMoney(a.amount) + "</td>" +
+          '<td><div class="t-actions"><button class="icon-btn" data-e="' + a.id + '">✏️</button><button class="icon-btn danger" data-x="' + a.id + '">🗑️</button></div></td></tr>';
+      }).join("") : empty("🤝", "لا توجد تبرّعات مسجّلة");
+      body.innerHTML = bar("تسجيل تبرّع", "addBtn", "gold") +
+        wrapTable(["التاريخ", "المتبرّع", "نوعية الإعانة", "المناسبة", "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), "in", list.length);
+      body.querySelector("#addBtn").onclick = function () { App.donationForm(null, paint); };
+      body.querySelectorAll("[data-d]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("donors", { id: el.getAttribute("data-d") }); }; });
+      body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { App.donationForm(null, paint, el.getAttribute("data-e")); }; });
+      body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm("donations", el.getAttribute("data-x"), paint); }; });
+    }
+
+    function renderTx(body, coll, title, catKey, catLabel, dir, formFn) {
+      var list = DB.all(coll).sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+      var total = list.reduce(function (s, a) { return s + (parseFloat(a.amount) || 0); }, 0);
+      var rows = list.length ? list.map(function (a) {
+        return "<tr><td>" + U.fmtDate(a.date) + "</td><td>" + U.esc(a.label || "—") + "</td><td>" + U.esc(a[catKey] || "—") +
+          '</td><td class="money ' + dir + '">' + U.fmtMoney(a.amount) + '</td><td><div class="t-actions">' +
+          '<button class="icon-btn" data-e="' + a.id + '">✏️</button><button class="icon-btn danger" data-x="' + a.id + '">🗑️</button></div></td></tr>';
+      }).join("") : empty(dir === "in" ? "📈" : "📉", "لا توجد سجلّات");
+      body.innerHTML = bar("إضافة " + title, "addBtn", dir === "in" ? "" : "danger") +
+        wrapTable(["التاريخ", "البيان", catLabel, "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), dir, list.length);
+      body.querySelector("#addBtn").onclick = function () { formFn(paint); };
+      body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { formFn(paint, el.getAttribute("data-e")); }; });
+      body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm(coll, el.getAttribute("data-x"), paint); }; });
+    }
+
+    function bar(label, id, cls) {
+      return '<div class="toolbar no-print"><div class="spacer" style="flex:1"></div><button class="btn ' + (cls || "") + '" id="' + id + '"><span class="ico">＋</span> ' + label + "</button></div>";
+    }
+    function wrapTable(headers, rows, totalLabel, totalVal, dir, count) {
+      var foot = count ? '<tfoot><tr><th colspan="' + (headers.length - 2) + '" style="text-align:left;background:var(--green-50)">' + totalLabel +
+        '</th><th class="money ' + dir + '" style="background:var(--green-50)">' + totalVal + '</th><th style="background:var(--green-50)"></th></tr></tfoot>' : "";
+      return '<div class="table-wrap"><table><thead><tr>' + headers.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr></thead><tbody>" + rows + "</tbody>" + foot + "</table></div>";
+    }
+    function empty(ico, txt) { return '<tr><td colspan="9"><div class="empty"><div class="e-ico">' + ico + "</div><h4>" + txt + "</h4></div></td></tr>"; }
+    function delConfirm(coll, id, cb) {
+      U.confirm({ title: "حذف السجلّ", danger: true, message: "حذف هذا السجلّ نهائياً؟", okText: "حذف", onOk: function () { DB.remove(coll, id); U.toast("تم الحذف", "info"); cb(); } });
+    }
+
+    paint();
+  };
+})(window);
+
+</script>
+  <script>
+/* =================================================================
+   dashboard.js — الرئيسية والإحصائيات
+   ================================================================= */
+(function (global) {
+  "use strict";
+  var App = global.App || (global.App = { views: {} });
+  App.views = App.views || {};
+
+  App.views.dashboard = function (container) {
+    var s = DB.settings();
+    var benAll = DB.all("beneficiaries"), ben = benAll.filter(function (b) { return !b.archived; });
+    var donAll = DB.all("donors"), don = donAll.filter(function (d) { return !d.archived; });
+
+    var totalDonations = DB.sum("donations", "amount");
+    var totalIncome = DB.sum("incomes", "amount");
+    var totalAid = DB.sum("aid", "amount");
+    var totalExpense = DB.sum("expenses", "amount");
+    var inflow = totalDonations + totalIncome;
+    var outflow = totalAid + totalExpense;
+    var balance = inflow - outflow;
+    var familiesServed = (function () { var ids = {}; DB.all("aid").forEach(function (a) { ids[a.beneficiaryId] = 1; }); return Object.keys(ids).length; })();
+
+    function stat(cls, ico, label, value, unit) {
+      return '<div class="stat ' + cls + '"><div class="ico-bg">' + ico + '</div>' +
+        '<div class="meta"><div class="label">' + label + '</div>' +
+        '<div class="value">' + value + (unit ? ' <span class="unit">' + unit + "</span>" : "") + "</div></div></div>";
+    }
+
+    /* تصنيف حسب نوع العائلة */
+    function breakdown(list, field, fallback) {
+      var map = {};
+      list.forEach(function (x) { var k = x[field] || fallback; map[k] = (map[k] || 0) + 1; });
+      var arr = Object.keys(map).map(function (k) { return { k: k, v: map[k] }; }).sort(function (a, b) { return b.v - a.v; });
+      var max = arr.reduce(function (m, x) { return Math.max(m, x.v); }, 0) || 1;
+      if (!arr.length) return '<div class="muted" style="padding:10px">لا توجد بيانات بعد</div>';
+      return '<div class="bars">' + arr.map(function (x) {
+        return '<div class="bar-row"><div>' + U.esc(x.k) + '</div><div class="bar-track"><div class="bar-fill" style="width:' + Math.round(x.v / max * 100) + '%"></div></div><div class="bv">' + U.fmtNum(x.v) + "</div></div>";
+      }).join("") + "</div>";
+    }
+
+    /* آخر النشاطات */
+    var recentAid = DB.all("aid").sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); }).slice(0, 6);
+    var recentDon = DB.all("donations").sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); }).slice(0, 6);
+    function bName(id) { var b = DB.get("beneficiaries", id); return b ? App.beneficiaryFullName(b) : "—"; }
+    function dName(id) { var d = DB.get("donors", id); return d ? App.donorFullName(d) : "—"; }
+
+    function activityRows(list, nameFn, dir) {
+      if (!list.length) return '<tr><td colspan="3" class="muted" style="text-align:center;padding:18px">لا يوجد نشاط بعد</td></tr>';
+      return list.map(function (x) {
+        return "<tr><td>" + U.fmtDate(x.date) + "</td><td>" + U.esc(nameFn(x[dir === "in" ? "donorId" : "beneficiaryId"])) +
+          (x.type ? ' <span class="tag gray">' + U.esc(x.type) + "</span>" : "") + '</td><td class="money ' + dir + '">' + U.fmtMoney(x.amount) + "</td></tr>";
+      }).join("");
+    }
+
+    container.innerHTML =
+      '<div class="cards grid-4 mb-16">' +
+        stat("green", "👨‍👩‍👧‍👦", "العائلات المنتفعة", U.fmtNum(ben.length), "عائلة") +
+        stat("gold", "🤝", "المتبرّعون", U.fmtNum(don.length), "متبرّع") +
+        stat("blue", "📈", "إجمالي التبرعات والمداخيل", U.fmtMoney(inflow)) +
+        stat(balance >= 0 ? "green" : "red", "⚖️", "الرصيد الصافي", U.fmtMoney(balance)) +
+      "</div>" +
+
+      '<div class="cards grid-4 mb-16">' +
+        stat("red", "🎁", "إجمالي المساعدات الممنوحة", U.fmtMoney(totalAid)) +
+        stat("blue", "🧾", "عدد عمليات المساعدة", U.fmtNum(DB.count("aid", true)), "عملية") +
+        stat("gold", "❤️", "عائلات استفادت فعلياً", U.fmtNum(familiesServed), "عائلة") +
+        stat("green", "📦", "الأرشيف", U.fmtNum(benAll.length - ben.length + (donAll.length - don.length)), "ملف") +
+      "</div>" +
+
+      '<div class="cards grid-2 mb-16">' +
+        '<div class="card"><div class="card-head"><h3>🏷️ توزيع العائلات حسب النوع</h3></div><div class="card-body">' + breakdown(ben, "familyType", "غير محدّد") + "</div></div>" +
+        '<div class="card"><div class="card-head"><h3>🩺 التغطية الاجتماعية</h3></div><div class="card-body">' + breakdown(ben, "coverage", "غير محدّدة") + "</div></div>" +
+      "</div>" +
+
+      '<div class="cards grid-2">' +
+        '<div class="card"><div class="card-head"><h3>🎁 آخر المساعدات</h3><div class="spacer"></div><button class="btn sm secondary" data-go="finance">عرض الكل</button></div>' +
+          '<div class="table-wrap" style="border:none;box-shadow:none;border-radius:0"><table><thead><tr><th>التاريخ</th><th>المنتفع</th><th>المقدار</th></tr></thead><tbody>' + activityRows(recentAid, bName, "out") + "</tbody></table></div></div>" +
+        '<div class="card"><div class="card-head"><h3>🤝 آخر التبرعات</h3><div class="spacer"></div><button class="btn sm secondary" data-go="donors">عرض الكل</button></div>' +
+          '<div class="table-wrap" style="border:none;box-shadow:none;border-radius:0"><table><thead><tr><th>التاريخ</th><th>المتبرّع</th><th>المقدار</th></tr></thead><tbody>' + activityRows(recentDon, dName, "in") + "</tbody></table></div></div>" +
+      "</div>";
+
+    container.querySelectorAll("[data-go]").forEach(function (el) {
+      el.onclick = function () { App.navigate(el.getAttribute("data-go")); };
+    });
+
+    // ترحيب عند فراغ البيانات
+    if (DB.isEmpty()) {
+      var hint = document.createElement("div");
+      hint.className = "card mt-20";
+      hint.innerHTML = '<div class="card-body" style="text-align:center;padding:30px">' +
+        '<div style="font-size:42px">🌱</div><h3 style="margin:8px 0;color:var(--green-900)">مرحباً بكم في نظام إدارة ' + U.esc(s.orgName) + "</h3>" +
+        '<p class="muted" style="max-width:520px;margin:0 auto 16px">ابدأ بإضافة العائلات المنتفعة والمتبرعين. كل البيانات تُحفظ على هذا الجهاز، وننصح بأخذ نسخة احتياطية دورية من قسم «الإعدادات».</p>' +
+        '<button class="btn" id="seedBtn"><span class="ico">＋</span> إضافة أوّل عائلة</button></div>';
+      container.appendChild(hint);
+      document.getElementById("seedBtn").onclick = function () { App.navigate("beneficiaries"); setTimeout(function () { var a = document.getElementById("bAdd"); a && a.click(); }, 60); };
+    }
+  };
+})(window);
+
+</script>
+  <script>
+/* =================================================================
+   settings.js — الإعدادات والنسخ الاحتياطي
+   ================================================================= */
+(function (global) {
+  "use strict";
+  var App = global.App || (global.App = { views: {} });
+  App.views = App.views || {};
+
+  App.views.settings = function (container) {
+    var s = DB.settings();
+
+    function counts() {
+      return {
+        beneficiaries: DB.count("beneficiaries", true),
+        donors: DB.count("donors", true),
+        aid: DB.count("aid", true),
+        donations: DB.count("donations", true),
+        expenses: DB.count("expenses", true),
+        incomes: DB.count("incomes", true)
+      };
+    }
+    var c = counts();
+
+    container.innerHTML =
+      '<div class="cards grid-2">' +
+
+        // معلومات الجمعية
+        '<div class="card"><div class="card-head"><h3>🏛️ معلومات الجمعية</h3></div><div class="card-body">' +
+          '<div class="form-grid">' +
+            '<div class="field full"><label>اسم الجمعية</label><input data-f="orgName" value="' + U.esc(s.orgName) + '"></div>' +
+            '<div class="field full"><label>الفرع / المقرّ</label><input data-f="orgBranch" value="' + U.esc(s.orgBranch || "") + '"></div>' +
+            '<div class="field"><label>رمز العملة</label><input data-f="currency" value="' + U.esc(s.currency) + '"></div>' +
+            '<div class="field"><label>السنة المرجعية</label><input type="number" data-f="year" value="' + U.esc(s.year || new Date().getFullYear()) + '"></div>' +
+          "</div>" +
+          '<button class="btn mt-20" id="saveSettings"><span class="ico">💾</span> حفظ المعلومات</button>' +
+        "</div></div>" +
+
+        // النسخ الاحتياطي
+        '<div class="card"><div class="card-head"><h3>💾 النسخ الاحتياطي والاسترجاع</h3></div><div class="card-body">' +
+          '<p class="muted" style="margin-top:0">البيانات محفوظة على هذا الجهاز فقط. خُذ نسخة احتياطية بانتظام واحفظها في مكان آمن (USB، بريد إلكتروني…).</p>' +
+          '<div class="info-list" style="margin-bottom:16px">' +
+            kv("العائلات المنتفعة", c.beneficiaries) + kv("المتبرّعون", c.donors) +
+            kv("سجلّات المساعدات", c.aid) + kv("سجلّات التبرعات", c.donations) +
+            kv("المصاريف", c.expenses) + kv("المداخيل", c.incomes) +
+          "</div>" +
+          '<button class="btn block" id="backupBtn"><span class="ico">⬇️</span> تنزيل نسخة احتياطية (JSON)</button>' +
+          '<div style="height:10px"></div>' +
+          '<label class="btn secondary block" style="cursor:pointer"><span class="ico">⬆️</span> استرجاع من ملف نسخة احتياطية' +
+            '<input type="file" id="restoreInput" accept="application/json,.json" style="display:none"></label>' +
+        "</div></div>" +
+
+      "</div>" +
+
+      // منطقة الخطر
+      '<div class="card mt-20" style="border-color:#f3c9c4">' +
+        '<div class="card-head" style="border-color:#f3c9c4"><h3 style="color:var(--danger)">⚠️ منطقة الخطر</h3></div>' +
+        '<div class="card-body"><div class="row-between" style="flex-wrap:wrap;gap:12px">' +
+          '<div><strong>حذف كل البيانات</strong><div class="muted" style="font-size:13px">يمسح جميع السجلّات نهائياً من هذا الجهاز. خُذ نسخة احتياطية أولاً.</div></div>' +
+          '<button class="btn danger" id="wipeBtn"><span class="ico">🗑️</span> حذف كل البيانات</button>' +
+        "</div></div></div>" +
+
+      '<p class="muted" style="text-align:center;margin-top:26px;font-size:12.5px">نظام إدارة العائلات والمتبرعين — نسخة 1.0 · يعمل دون اتصال بالإنترنت</p>';
+
+    function kv(k, v) { return '<div class="info-item"><div class="k">' + k + '</div><div class="v">' + U.fmtNum(v) + "</div></div>"; }
+
+    document.getElementById("saveSettings").onclick = function () {
+      var data = U.formData(container);
+      DB.saveSettings({ orgName: data.orgName || s.orgName, orgBranch: data.orgBranch, currency: data.currency || "د.ت", year: data.year });
+      U.toast("تم حفظ المعلومات");
+      App.refreshChrome && App.refreshChrome();
+    };
+
+    document.getElementById("backupBtn").onclick = function () {
+      var payload = DB.exportAll();
+      U.download("نسخة-احتياطية-" + U.today() + ".json", JSON.stringify(payload, null, 2), "application/json");
+      U.toast("تم تنزيل النسخة الاحتياطية");
+    };
+
+    document.getElementById("restoreInput").onchange = function (e) {
+      var file = e.target.files[0]; if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var payload;
+        try { payload = JSON.parse(reader.result); } catch (err) { U.toast("ملف غير صالح", "error"); return; }
+        if (!payload.data) { U.toast("الملف لا يحتوي على بيانات صالحة", "error"); return; }
+        U.openModal({
+          title: "استرجاع البيانات",
+          body: '<p>اختر طريقة الاسترجاع:</p>' +
+            '<div style="display:flex;flex-direction:column;gap:10px">' +
+              '<label class="radio-chip" style="display:block"><input type="radio" name="mode" value="replace" checked><span style="display:block;text-align:right">استبدال كامل — يحذف البيانات الحالية ويضع بيانات الملف</span></label>' +
+              '<label class="radio-chip" style="display:block"><input type="radio" name="mode" value="merge"><span style="display:block;text-align:right">دمج — يضيف سجلّات الملف الجديدة دون حذف الحالية</span></label>' +
+            "</div>",
+          footer: '<button class="btn" id="doRestore"><span class="ico">⬆️</span> استرجاع</button><button class="btn secondary" id="cancelRestore">إلغاء</button>',
+          onOpen: function (root) {
+            root.querySelector("#cancelRestore").onclick = U.closeModal;
+            root.querySelector("#doRestore").onclick = function () {
+              var mode = root.querySelector('input[name="mode"]:checked').value;
+              try {
+                DB.importAll(payload, mode);
+                U.closeModal(); U.toast("تم استرجاع البيانات بنجاح");
+                App.refreshChrome && App.refreshChrome();
+                App.navigate("settings");
+              } catch (err) { U.toast("تعذّر الاسترجاع: " + err.message, "error"); }
+            };
+          }
+        });
+        e.target.value = "";
+      };
+      reader.readAsText(file);
+    };
+
+    document.getElementById("wipeBtn").onclick = function () {
+      U.confirm({
+        title: "حذف كل البيانات", danger: true,
+        message: "سيتم حذف جميع العائلات والمتبرعين والسجلّات المالية نهائياً من هذا الجهاز. لا يمكن التراجع. هل أنت متأكّد؟",
+        okText: "نعم، احذف كل شيء",
+        onOk: function () {
+          U.confirm({
+            title: "تأكيد أخير", danger: true,
+            message: "هل أخذت نسخة احتياطية؟ سيتم الآن مسح كل البيانات.",
+            okText: "متابعة الحذف",
+            onOk: function () { DB.clearAll(); U.toast("تم حذف جميع البيانات", "info"); App.refreshChrome && App.refreshChrome(); App.navigate("dashboard"); }
+          });
+        }
+      });
+    };
+  };
+})(window);
+
+</script>
+  <script>
+/* =================================================================
+   search.js — البحث الشامل (عائلات + أفراد + متبرّعون)
+   شريط بحث في الأعلى يجد أيّ عائلة أو فرد (ابن/مكفول) أو متبرّع
+   من أيّ قسم، مع لوحة نتائج قابلة للتنقّل بالفأرة أو لوحة المفاتيح.
+   ================================================================= */
+(function (global) {
+  "use strict";
+  var App = global.App || (global.App = { views: {} });
+  var MAX = 6;
+
+  function fam(b) { return App.beneficiaryFullName ? App.beneficiaryFullName(b) : [b.firstName, b.lastName].filter(Boolean).join(" "); }
+  function don(d) { return App.donorFullName ? App.donorFullName(d) : [d.firstName, d.lastName].filter(Boolean).join(" "); }
+
+  /* محرّك البحث — متاح أيضاً للاستعمال البرمجي/الاختبار */
+  function searchAll(q) {
+    var res = { families: [], members: [], donors: [] };
+    q = (q || "").trim().toLowerCase();
+    if (!q) return res;
+    DB.all("beneficiaries").forEach(function (b) {
+      if (U.match(b, q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "address"])) res.families.push(b);
+      (b.children || []).forEach(function (k) {
+        if (k.name && k.name.toLowerCase().indexOf(q) !== -1) res.members.push({ k: k, b: b });
+      });
+    });
+    DB.all("donors").forEach(function (d) {
+      if (U.match(d, q, ["firstName", "lastName", "phone", "type"])) res.donors.push(d);
+    });
+    return res;
+  }
+  App.searchAll = searchAll;
+
+  App.initGlobalSearch = function () {
+    var wrap = document.getElementById("globalSearch");
+    var input = document.getElementById("gsInput");
+    var panel = document.getElementById("gsResults");
+    if (!wrap || !input || !panel) return;
+
+    var items = [];   // قائمة مسطّحة لكل نتيجة قابلة للفتح
+    var active = -1;
+
+    function close() { panel.classList.remove("open"); panel.innerHTML = ""; items = []; active = -1; }
+    function go(it) { close(); input.value = ""; input.blur(); it.fn(); if (it.toast) U.toast(it.toast, "info"); }
+
+    function more(n) { return '<div class="gs-more">+ ' + U.fmtNum(n) + " نتيجة أخرى… واصل الكتابة لتضييق البحث</div>"; }
+    function item(icoCls, ico, title, sub, tag) {
+      var idx = items.length;
+      return '<div class="gs-item" data-i="' + idx + '"><div class="gi ' + icoCls + '">' + ico + "</div>" +
+        '<div class="gtxt"><div class="gt">' + U.esc(title) + (tag ? ' <span class="tag gray gs-tag">' + tag + "</span>" : "") + "</div>" +
+        (sub ? '<div class="gsub">' + sub + "</div>" : "") + "</div></div>";
+    }
+
+    function render() {
+      var q = input.value.trim();
+      items = []; active = -1;
+      if (!q) { close(); return; }
+      var r = searchAll(q);
+      var total = r.families.length + r.members.length + r.donors.length;
+      if (!total) {
+        panel.innerHTML = '<div class="gs-empty">لا توجد نتائج لـ «' + U.esc(q) + "»</div>";
+        panel.classList.add("open"); return;
+      }
+      var html = "";
+
+      if (r.families.length) {
+        html += '<div class="gs-group">👨‍👩‍👧‍👦 العائلات (' + U.fmtNum(r.families.length) + ")</div>";
+        r.families.slice(0, MAX).forEach(function (b) {
+          var sub = "رقم الملف: " + U.esc(b.fileNo || "—") + (b.phone ? " · ☎ " + U.esc(b.phone) : "");
+          html += item("ic-green", "👨‍👩‍👧‍👦", fam(b), sub, b.archived ? "مؤرشف" : "");
+          items.push({ fn: function () { App.navigate("beneficiaries", { id: b.id }); } });
+        });
+        if (r.families.length > MAX) html += more(r.families.length - MAX);
+      }
+
+      if (r.members.length) {
+        html += '<div class="gs-group">👤 الأفراد المكفولون (' + U.fmtNum(r.members.length) + ")</div>";
+        r.members.slice(0, MAX).forEach(function (m) {
+          var age = m.k.dob && U.age(m.k.dob) !== "" ? " · " + U.age(m.k.dob) + " سنة" : "";
+          html += item("ic-gold", "👤", m.k.name, "ضمن عائلة " + U.esc(fam(m.b)) + age, "");
+          items.push({
+            fn: function () { App.navigate("beneficiaries", { id: m.b.id }); },
+            toast: "الفرد «" + m.k.name + "» مُدرَج ضمن هذه العائلة"
+          });
+        });
+        if (r.members.length > MAX) html += more(r.members.length - MAX);
+      }
+
+      if (r.donors.length) {
+        html += '<div class="gs-group">🤝 المتبرّعون (' + U.fmtNum(r.donors.length) + ")</div>";
+        r.donors.slice(0, MAX).forEach(function (d) {
+          var sub = d.phone ? "☎ " + U.esc(d.phone) : U.esc(d.type || "متبرّع");
+          html += item("ic-blue", "🤝", don(d), sub, d.archived ? "مؤرشف" : "");
+          items.push({ fn: function () { App.navigate("donors", { id: d.id }); } });
+        });
+        if (r.donors.length > MAX) html += more(r.donors.length - MAX);
+      }
+
+      panel.innerHTML = html;
+      panel.classList.add("open");
+      panel.querySelectorAll(".gs-item").forEach(function (el) {
+        el.addEventListener("mousedown", function (e) { e.preventDefault(); }); // منع فقدان التركيز قبل النقر
+        el.addEventListener("click", function () { var i = +el.getAttribute("data-i"); if (items[i]) go(items[i]); });
+      });
+    }
+
+    function highlight() {
+      var els = panel.querySelectorAll(".gs-item");
+      els.forEach(function (el, i) {
+        var on = i === active;
+        el.classList.toggle("active", on);
+        if (on) el.scrollIntoView({ block: "nearest" });
+      });
+    }
+
+    var deb = U.debounce(render, 150);
+    input.addEventListener("input", deb);
+    input.addEventListener("focus", function () { if (input.value.trim()) render(); });
+    input.addEventListener("keydown", function (e) {
+      var n = items.length;
+      if (e.key === "Escape") { close(); input.blur(); }
+      else if (e.key === "ArrowDown" && n) { e.preventDefault(); active = (active + 1) % n; highlight(); }
+      else if (e.key === "ArrowUp" && n) { e.preventDefault(); active = (active - 1 + n) % n; highlight(); }
+      else if (e.key === "Enter" && n) { e.preventDefault(); go(items[active >= 0 ? active : 0]); }
+    });
+    document.addEventListener("click", function (e) { if (!wrap.contains(e.target)) close(); });
+  };
+})(window);
+
+</script>
+  <script>
+/* =================================================================
+   app.js — التحكّم العام والتنقّل بين الأقسام
+   ================================================================= */
+(function (global) {
+  "use strict";
+  var App = global.App || (global.App = { views: {} });
+
+  var NAV = [
+    { id: "dashboard",     icon: "🏠", label: "الرئيسية",  title: "الرئيسية",         sub: "نظرة عامة وإحصائيات" },
+    { id: "beneficiaries", icon: "👨‍👩‍👧‍👦", label: "المنتفعون", title: "المنتفعون",        sub: "العائلات والحالات الاجتماعية", badge: function () { return DB.count("beneficiaries"); } },
+    { id: "donors",        icon: "🤝", label: "المتبرّعون", title: "المتبرّعون",       sub: "المحسنون وتبرّعاتهم", badge: function () { return DB.count("donors"); } },
+    { id: "finance",       icon: "💰", label: "الشأن المالي", title: "الشأن المالي",    sub: "المساعدات والتبرعات والمصاريف والمداخيل" },
+    { id: "settings",      icon: "⚙️", label: "الإعدادات", title: "الإعدادات",        sub: "معلومات الجمعية والنسخ الاحتياطي" }
+  ];
+
+  var current = "dashboard";
+
+  App.navigate = function (view, params) {
+    if (!App.views[view]) view = "dashboard";
+    current = view;
+    try { location.hash = view; } catch (e) {}
+    renderNav();
+    var meta = NAV.filter(function (n) { return n.id === view; })[0] || NAV[0];
+    document.getElementById("pageTitle").textContent = meta.title;
+    document.getElementById("pageSub").textContent = meta.sub;
+    var content = document.getElementById("content");
+    content.innerHTML = "";
+    // إغلاق القائمة الجانبية على الجوّال
+    document.getElementById("sidebar").classList.remove("show");
+    try {
+      App.views[view](content, params);
+    } catch (e) {
+      console.error(e);
+      content.innerHTML = '<div class="empty"><div class="e-ico">⚠️</div><h4>حدث خطأ في عرض هذا القسم</h4><p class="muted">' + U.esc(e.message) + "</p></div>";
+    }
+    content.scrollTop = 0;
+    document.querySelector(".main").scrollTop = 0;
+  };
+
+  function renderNav() {
+    var nav = document.getElementById("nav");
+    nav.innerHTML = NAV.map(function (n) {
+      var badge = "";
+      if (n.badge) { var v = n.badge(); if (v) badge = '<span class="badge">' + U.fmtNum(v) + "</span>"; }
+      return '<button class="' + (current === n.id ? "active" : "") + '" data-nav="' + n.id + '">' +
+        '<span class="ico">' + n.icon + "</span><span>" + n.label + "</span>" + badge + "</button>";
+    }).join("");
+    nav.querySelectorAll("[data-nav]").forEach(function (el) {
+      el.onclick = function () { App.navigate(el.getAttribute("data-nav")); };
+    });
+  }
+
+  // إعادة رسم الترويسة والشارات بعد تغيّر الإعدادات أو البيانات
+  App.refreshChrome = function () {
+    var s = DB.settings();
+    document.getElementById("brandName").textContent = s.orgName;
+    document.getElementById("brandBranch").textContent = s.orgBranch || "";
+    renderNav();
+  };
+
+  function init() {
+    App.refreshChrome();
+    if (App.initGlobalSearch) App.initGlobalSearch();
+    var start = (location.hash || "").replace("#", "");
+    App.navigate(App.views[start] ? start : "dashboard");
+
+    document.getElementById("menuToggle").onclick = function () {
+      document.getElementById("sidebar").classList.toggle("show");
+    };
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})(window);
+
+</script>
+  </body>
+</html>
