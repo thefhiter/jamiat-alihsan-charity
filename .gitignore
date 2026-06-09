@@ -1,5 +1,6 @@
-# Dependencies (none required — pure static app)
+# Dependencies & desktop build output
 node_modules/
+dist/
 
 # OS / editor cruft
 Thumbs.db

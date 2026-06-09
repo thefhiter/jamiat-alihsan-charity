@@ -1,0 +1,47 @@
+{
+  "name": "jamiat-alihsan-charity",
+  "version": "1.0.0",
+  "description": "نظام عربي يعمل دون إنترنت لإدارة العائلات المنتفعة والمتبرّعين والمساعدات والمداخيل والمصاريف لجمعية الإحسان الخيرية",
+  "main": "main.js",
+  "author": "thefhiter <aiautomationsyousseftn@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "icon": "node tools/make-icon.cjs",
+    "start": "electron .",
+    "dist": "electron-builder --win portable",
+    "dist:setup": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  },
+  "build": {
+    "appId": "tn.alihsan.charity",
+    "productName": "جمعية الإحسان",
+    "directories": { "output": "dist" },
+    "files": [
+      "index.html",
+      "css/**/*",
+      "js/**/*",
+      "assets/**/*",
+      "main.js",
+      "build/icon.*"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "JamiatAlIhsan-${version}.exe"
+    },
+    "nsis": {
+      "artifactName": "JamiatAlIhsan-Setup-${version}.exe",
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "جمعية الإحسان"
+    }
+  }
+}
