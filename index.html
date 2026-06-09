@@ -36,9 +36,16 @@
     <main class="main">
       <div class="topbar">
         <button class="btn ghost menu-toggle" id="menuToggle" aria-label="القائمة">☰</button>
-        <div>
+        <div class="page-titles">
           <h2 id="pageTitle">الرئيسية</h2>
           <div class="sub" id="pageSub">نظرة عامة وإحصائيات</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="global-search" id="globalSearch">
+          <span class="gs-ico">🔍</span>
+          <input id="gsInput" type="search" autocomplete="off" aria-label="بحث شامل"
+                 placeholder="بحث عن عائلة أو فرد أو متبرّع…">
+          <div class="gs-results" id="gsResults"></div>
         </div>
       </div>
       <div class="content" id="content"><!-- يُعرض القسم هنا --></div>
@@ -55,6 +62,7 @@
   <script src="js/finance.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/settings.js"></script>
+  <script src="js/search.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

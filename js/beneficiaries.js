@@ -45,7 +45,7 @@
         return state.filter === "archived" ? b.archived : !b.archived;
       });
       if (state.q) list = list.filter(function (b) {
-        return U.match(b, state.q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "address"]);
+        return U.match(b, state.q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "address"]) || memberHits(b, state.q).length;
       });
       list.sort(function (a, b) { return (b.createdAt || "").localeCompare(a.createdAt || ""); });
       return list;
@@ -60,9 +60,11 @@
       } else {
         var tr = list.map(function (b) {
           var aidCount = DB.where("aid", "beneficiaryId", b.id).length;
+          var hits = memberHits(b, state.q);
+          var hitChip = hits.length ? '<div style="margin-top:3px"><span class="tag green" style="font-size:11px">👤 يطابق فرداً: ' + U.esc(hits.join("، ")) + "</span></div>" : "";
           return "<tr>" +
             '<td><span class="tag gray">' + U.esc(b.fileNo || "—") + "</span></td>" +
-            '<td><a href="#" data-open="' + b.id + '" style="font-weight:800">' + U.esc(fullName(b)) + "</a></td>" +
+            '<td><a href="#" data-open="' + b.id + '" style="font-weight:800">' + U.esc(fullName(b)) + "</a>" + hitChip + "</td>" +
             "<td>" + U.esc(b.phone || "—") + "</td>" +
             "<td>" + U.esc(b.marital || "—") + "</td>" +
             '<td style="text-align:center">' + U.fmtNum(b.members || childrenCount(b) + 1) + "</td>" +
@@ -85,7 +87,7 @@
 
       container.innerHTML =
         '<div class="toolbar no-print">' +
-          '<div class="search"><span class="si">🔍</span><input id="bSearch" placeholder="بحث بالاسم، رقم الملف، ب.ت.و، الهاتف…" value="' + U.esc(state.q) + '"></div>' +
+          '<div class="search"><span class="si">🔍</span><input id="bSearch" placeholder="بحث بالاسم، رقم الملف، ب.ت.و، الهاتف، أو اسم فرد…" value="' + U.esc(state.q) + '"></div>' +
           '<div class="filter-pills">' +
             '<button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">الحالات النشطة</button>' +
             '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button>' +
@@ -157,6 +159,15 @@
   };
 
   function childrenCount(b) { return (b.children || []).length; }
+
+  /* أسماء الأفراد (الأبناء/المكفولين) المطابقين لنصّ البحث داخل عائلة */
+  function memberHits(b, q) {
+    if (!q) return [];
+    q = q.toLowerCase();
+    return (b.children || [])
+      .filter(function (k) { return k.name && k.name.toLowerCase().indexOf(q) !== -1; })
+      .map(function (k) { return k.name; });
+  }
 
   /* ============ تفاصيل الملف ============ */
   function detail(container, id) {

@@ -60,6 +60,7 @@
 
   function init() {
     App.refreshChrome();
+    if (App.initGlobalSearch) App.initGlobalSearch();
     var start = (location.hash || "").replace("#", "");
     App.navigate(App.views[start] ? start : "dashboard");
 
