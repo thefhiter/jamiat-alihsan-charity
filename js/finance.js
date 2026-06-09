@@ -97,7 +97,7 @@
         "</div>";
     }
     function stat(cls, ico, label, val) {
-      return '<div class="stat ' + cls + '"><div class="ico-bg">' + ico + '</div><div style="padding-inline-end:54px"><div class="label">' + label + '</div><div class="value" style="font-size:23px">' + val + "</div></div></div>";
+      return '<div class="stat ' + cls + '"><div class="ico-bg">' + ico + '</div><div class="meta"><div class="label">' + label + '</div><div class="value" style="font-size:22px">' + val + "</div></div></div>";
     }
 
     function paint() {

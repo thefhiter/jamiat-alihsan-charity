@@ -22,7 +22,7 @@
 
     function stat(cls, ico, label, value, unit) {
       return '<div class="stat ' + cls + '"><div class="ico-bg">' + ico + '</div>' +
-        '<div style="padding-inline-end:54px"><div class="label">' + label + '</div>' +
+        '<div class="meta"><div class="label">' + label + '</div>' +
         '<div class="value">' + value + (unit ? ' <span class="unit">' + unit + "</span>" : "") + "</div></div></div>";
     }
 
