@@ -45,7 +45,7 @@
         return state.filter === "archived" ? b.archived : !b.archived;
       });
       if (state.q) list = list.filter(function (b) {
-        return U.match(b, state.q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "address"]) || memberHits(b, state.q).length;
+        return U.match(b, state.q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "address"]);
       });
       list.sort(function (a, b) { return (b.createdAt || "").localeCompare(a.createdAt || ""); });
       return list;
@@ -60,14 +60,12 @@
       } else {
         var tr = list.map(function (b) {
           var aidCount = DB.where("aid", "beneficiaryId", b.id).length;
-          var hits = memberHits(b, state.q);
-          var hitChip = hits.length ? '<div style="margin-top:3px"><span class="tag green" style="font-size:11px">👤 يطابق فرداً: ' + U.esc(hits.join("، ")) + "</span></div>" : "";
           return "<tr>" +
             '<td><span class="tag gray">' + U.esc(b.fileNo || "—") + "</span></td>" +
-            '<td><a href="#" data-open="' + b.id + '" style="font-weight:800">' + U.esc(fullName(b)) + "</a>" + hitChip + "</td>" +
+            '<td><a href="#" data-open="' + b.id + '" style="font-weight:800">' + U.esc(fullName(b)) + "</a></td>" +
             "<td>" + U.esc(b.phone || "—") + "</td>" +
             "<td>" + U.esc(b.marital || "—") + "</td>" +
-            '<td style="text-align:center">' + U.fmtNum(b.members || famMemberCount(b) + 1) + "</td>" +
+            '<td style="text-align:center">' + (b.members ? U.fmtNum(b.members) : "—") + "</td>" +
             "<td>" + catTag(b) + "</td>" +
             '<td style="text-align:center">' + (aidCount ? '<span class="tag green">' + aidCount + "</span>" : '<span class="muted">0</span>') + "</td>" +
             '<td><div class="t-actions">' +
@@ -107,7 +105,7 @@
         U.printTable("قائمة العائلات", ["رقم الملف", "الاسم واللقب", "الهاتف", "الحالة العائلية", "عدد الأفراد", "الصنف", "المساعدات"],
           l.map(function (b) {
             return [b.fileNo || "—", fullName(b), b.phone || "—", b.marital || "—",
-              b.members || famMemberCount(b) + 1, b.category || "—", DB.where("aid", "beneficiaryId", b.id).length];
+              b.members || "—", b.category || "—", DB.where("aid", "beneficiaryId", b.id).length];
           }), { subtitle: state.filter === "archived" ? "الأرشيف" : "الحالات النشطة" });
       };
       container.querySelectorAll("[data-flt]").forEach(function (el) {
@@ -155,7 +153,7 @@
         { label: "اللقب", key: "lastName" }, { label: "الكنية", key: "nickname" },
         { label: "ب.ت.و", key: "cin" }, { label: "الهاتف", key: "phone" },
         { label: "تاريخ الولادة", key: "dob" }, { label: "الحالة العائلية", key: "marital" },
-        { label: "عدد الأفراد", get: function (b) { return b.members || famMemberCount(b) + 1; } },
+        { label: "عدد الأفراد", get: function (b) { return b.members || ""; } },
         { label: "نوع العائلة", key: "familyType" }, { label: "الصنف", key: "category" },
         { label: "العمل", key: "work" }, { label: "تقدير الدخل", key: "income" },
         { label: "السكن", key: "housing" }, { label: "العنوان", key: "address" },
@@ -167,18 +165,6 @@
 
     paint();
   };
-
-  /* عدد أفراد العائلة (المنتفعون المرتبطون بها) */
-  function famMemberCount(b) { return App.familyMembers ? App.familyMembers(b.id).length : 0; }
-
-  /* أسماء أفراد العائلة المنتفعين المطابقين لنصّ البحث داخل عائلة */
-  function memberHits(b, q) {
-    if (!q || !App.familyMembers) return [];
-    q = q.toLowerCase();
-    return App.familyMembers(b.id)
-      .map(function (m) { return App.memberFullName ? App.memberFullName(m) : [m.firstName, m.lastName].filter(Boolean).join(" "); })
-      .filter(function (n) { return n && n.toLowerCase().indexOf(q) !== -1; });
-  }
 
   /* ============ تفاصيل الملف ============ */
   function detail(container, id) {
@@ -198,25 +184,6 @@
           '<td><div class="t-actions"><button class="icon-btn" data-aedit="' + a.id + '">✏️</button>' +
           '<button class="icon-btn danger" data-adel="' + a.id + '">🗑️</button></div></td></tr>';
       }).join("") : '<tr><td colspan="5" class="muted" style="text-align:center;padding:22px">لا توجد مساعدات مسجّلة بعد</td></tr>';
-
-      var mem = App.familyMembers ? App.familyMembers(id) : [];
-      var membersBlock =
-        '<div class="row-between mt-20" style="margin-bottom:8px">' +
-          '<h4 style="margin:0;font-size:14px;color:var(--green-900)">👤 المنتفعون (أفراد العائلة) — ' + U.fmtNum(mem.length) + "</h4>" +
-          '<button class="btn sm secondary no-print" id="bAddMember"><span class="ico">＋</span> إضافة فرد</button>' +
-        "</div>" +
-        (mem.length ?
-          '<div class="table-wrap"><table><thead><tr><th>الاسم</th><th>الصلة</th><th>العمر</th><th>المستوى الدراسي</th><th>الحالة الصحية</th><th>إجراءات</th></tr></thead><tbody>' +
-          mem.map(function (k) {
-            return '<tr><td><a href="#" data-mopen="' + k.id + '" style="font-weight:700">' + U.esc(App.memberFullName(k)) + "</a></td>" +
-              "<td>" + U.esc(k.relation || "—") + "</td>" +
-              "<td>" + (k.dob && U.age(k.dob) !== "" ? U.age(k.dob) + " سنة" : "—") + "</td>" +
-              "<td>" + U.esc(k.grade || "—") + "</td>" +
-              "<td>" + U.esc(k.health || "عادية") + "</td>" +
-              '<td><div class="t-actions no-print"><button class="icon-btn" data-medit="' + k.id + '">✏️</button>' +
-              '<button class="icon-btn danger" data-mdel="' + k.id + '">🗑️</button></div></td></tr>';
-          }).join("") + "</tbody></table></div>"
-          : '<div class="muted" style="padding:8px 0">لا يوجد أفراد مسجّلون لهذه العائلة. اضغط «إضافة فرد».</div>');
 
       var healthBits = [];
       if (b.chronic) healthBits.push('<span class="tag amber">مرض مزمن: ' + U.esc(b.chronicType || "غير محدّد") + "</span>");
@@ -252,12 +219,12 @@
             '<div class="card mb-16"><div class="card-head"><h3>👨‍👩‍👧 الحالة العائلية والصحية</h3></div><div class="card-body">' +
               '<div class="info-list">' +
                 info("الحالة العائلية", U.esc(b.marital)) +
-                info("عدد الأفراد", U.fmtNum(b.members || famMemberCount(b) + 1)) +
+                info("عدد الأفراد", b.members ? U.fmtNum(b.members) : "—") +
                 info("نوع العائلة", U.esc(b.familyType)) +
                 info("الحالة الصحية", healthBits.join(" ")) +
                 info("الضمان الاجتماعي", U.esc(b.ssn) + (b.cardExpiry ? " — صلوحية: " + U.fmtDate(b.cardExpiry) : "")) +
                 info("التغطية الاجتماعية", U.esc(b.coverage)) +
-              "</div>" + membersBlock +
+              "</div>" +
             "</div></div>" +
 
             '<div class="card mb-16"><div class="card-head"><h3>💼 الوضعية المادية والسكن</h3></div><div class="card-body">' +
@@ -286,20 +253,6 @@
       document.getElementById("bEdit").onclick = function () { openForm(id, paint); };
       document.getElementById("bPrint").onclick = function () { printFile(id); };
       document.getElementById("bAddAid").onclick = function () { App.aidForm(id, paint); };
-      var addMem = document.getElementById("bAddMember");
-      if (addMem) addMem.onclick = function () { App.memberForm(id, paint); };
-      container.querySelectorAll("[data-mopen]").forEach(function (el) {
-        el.onclick = function (e) { e.preventDefault(); App.navigate("members", { id: el.getAttribute("data-mopen") }); };
-      });
-      container.querySelectorAll("[data-medit]").forEach(function (el) {
-        el.onclick = function () { App.memberForm(null, paint, el.getAttribute("data-medit")); };
-      });
-      container.querySelectorAll("[data-mdel]").forEach(function (el) {
-        el.onclick = function () {
-          U.confirm({ title: "حذف المنتفع", danger: true, message: "حذف هذا الفرد نهائياً؟", okText: "حذف",
-            onOk: function () { DB.remove("members", el.getAttribute("data-mdel")); U.toast("تم الحذف", "info"); paint(); } });
-        };
-      });
       container.querySelectorAll("[data-aedit]").forEach(function (el) {
         el.onclick = function () { App.aidForm(id, paint, el.getAttribute("data-aedit")); };
       });
@@ -356,9 +309,8 @@
         '<div class="form-grid" style="margin-top:12px">' +
           '<div class="field"><label>نوع العائلة</label><select data-f="familyType">' + opts(FAMILY_TYPE, b.familyType) + "</select></div>" +
           '<div class="field"><label>صنف الحالة (الأولوية)</label><select data-f="category">' + opts(CATEGORY, b.category) + "</select></div>" +
-          '<div class="field"><label>عدد الأفراد بالعائلة</label><input type="number" min="1" data-f="members" value="' + U.esc(b.members || "") + '" placeholder="يُحسب تلقائياً إن تُرك فارغاً"></div>' +
+          '<div class="field"><label>عدد الأفراد بالعائلة</label><input type="number" min="1" data-f="members" value="' + U.esc(b.members || "") + '"></div>' +
         "</div>" +
-        '<div style="margin-top:10px" class="muted" style="font-size:13px">👤 يُدار أفراد العائلة (الأبناء والمكفولون) الآن من قسم «المنتفعون» المستقلّ. بعد حفظ العائلة، أضِفهم من ملفّ العائلة (زرّ «إضافة فرد») أو من قسم «المنتفعون».</div>' +
       "</fieldset>" +
 
       '<fieldset class="fieldset"><legend>④ الحالة الصحية</legend>' +
@@ -422,10 +374,6 @@
     if (!b) return;
     var aid = DB.where("aid", "beneficiaryId", id);
     function r(k, v) { return "<div><b>" + k + ":</b> " + U.esc(v || "—") + "</div>"; }
-    var kids = App.familyMembers ? App.familyMembers(id) : [];
-    var kidsTbl = kids.length ?
-      "<h2>المنتفعون (أفراد العائلة)</h2><table><tr><th>الاسم</th><th>الصلة</th><th>تاريخ الولادة</th><th>العمر</th><th>المستوى</th><th>الحالة الصحية</th></tr>" +
-      kids.map(function (k) { return "<tr><td>" + U.esc(App.memberFullName(k)) + "</td><td>" + U.esc(k.relation || "—") + "</td><td>" + U.fmtDate(k.dob) + "</td><td>" + (k.dob ? U.age(k.dob) : "—") + "</td><td>" + U.esc(k.grade || "—") + "</td><td>" + U.esc(k.health || "عادية") + "</td></tr>"; }).join("") + "</table>" : "";
     var aidTbl = aid.length ?
       "<h2>المساعدات الممنوحة</h2><table><tr><th>التاريخ</th><th>النوع</th><th>المناسبة</th><th>المقدار</th></tr>" +
       aid.map(function (a) { return "<tr><td>" + U.fmtDate(a.date) + "</td><td>" + U.esc(a.type) + "</td><td>" + U.esc(a.occasion || "—") + "</td><td>" + U.fmtMoney(a.amount) + "</td></tr>"; }).join("") + "</table>" : "";
@@ -435,7 +383,7 @@
       '<div class="kv">' +
         r("الاسم واللقب", fullName(b)) + r("ب.ت.و", b.cin) +
         r("تاريخ ومكان الولادة", U.fmtDate(b.dob) + " — " + (b.birthPlace || "")) + r("الهاتف", b.phone) +
-        r("الحالة العائلية", b.marital) + r("عدد الأفراد", b.members || kids.length + 1) +
+        r("الحالة العائلية", b.marital) + r("عدد الأفراد", b.members || "—") +
         r("نوع العائلة", b.familyType) + r("صنف الحالة", b.category) +
         r("الضمان الاجتماعي", b.ssn) + r("صلوحية البطاقة", b.cardExpiry ? U.fmtDate(b.cardExpiry) : "—") +
         r("التغطية الاجتماعية", b.coverage) + r("الحالة الصحية", [b.chronic ? "مرض مزمن (" + (b.chronicType || "") + ")" : "", b.disabled ? "إعاقة (" + (b.disabilityType || "") + ")" : "", b.pension ? "ينتفع بجراية" : ""].filter(Boolean).join("، ") || "عادية") +
@@ -443,7 +391,7 @@
         r("السكن", b.housing + (b.rent ? " — كراء " + U.fmtMoney(b.rent) : "")) + r("العنوان", (b.address || "") + " " + (b.postal || "")) +
       "</div>" +
       (b.notes ? "<h2>توصيف الحالة</h2><p>" + U.esc(b.notes) + "</p>" : "") +
-      kidsTbl + aidTbl +
+      aidTbl +
       '<div class="sign"><div><div class="line">إمضاء العون المكلّف</div></div><div><div class="line">إمضاء رئيس اللجنة الاجتماعية</div></div></div>';
 
     U.printHTML("بطاقة حالة اجتماعية — " + fullName(b), html);
