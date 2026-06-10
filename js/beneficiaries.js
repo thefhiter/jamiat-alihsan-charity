@@ -67,7 +67,7 @@
             '<td><a href="#" data-open="' + b.id + '" style="font-weight:800">' + U.esc(fullName(b)) + "</a>" + hitChip + "</td>" +
             "<td>" + U.esc(b.phone || "—") + "</td>" +
             "<td>" + U.esc(b.marital || "—") + "</td>" +
-            '<td style="text-align:center">' + U.fmtNum(b.members || childrenCount(b) + 1) + "</td>" +
+            '<td style="text-align:center">' + U.fmtNum(b.members || famMemberCount(b) + 1) + "</td>" +
             "<td>" + catTag(b) + "</td>" +
             '<td style="text-align:center">' + (aidCount ? '<span class="tag green">' + aidCount + "</span>" : '<span class="muted">0</span>') + "</td>" +
             '<td><div class="t-actions">' +
@@ -145,7 +145,7 @@
         { label: "اللقب", key: "lastName" }, { label: "الكنية", key: "nickname" },
         { label: "ب.ت.و", key: "cin" }, { label: "الهاتف", key: "phone" },
         { label: "تاريخ الولادة", key: "dob" }, { label: "الحالة العائلية", key: "marital" },
-        { label: "عدد الأفراد", get: function (b) { return b.members || childrenCount(b) + 1; } },
+        { label: "عدد الأفراد", get: function (b) { return b.members || famMemberCount(b) + 1; } },
         { label: "نوع العائلة", key: "familyType" }, { label: "الصنف", key: "category" },
         { label: "العمل", key: "work" }, { label: "تقدير الدخل", key: "income" },
         { label: "السكن", key: "housing" }, { label: "العنوان", key: "address" },
@@ -158,15 +158,16 @@
     paint();
   };
 
-  function childrenCount(b) { return (b.children || []).length; }
+  /* عدد أفراد العائلة (المنتفعون المرتبطون بها) */
+  function famMemberCount(b) { return App.familyMembers ? App.familyMembers(b.id).length : 0; }
 
-  /* أسماء الأفراد (الأبناء/المكفولين) المطابقين لنصّ البحث داخل عائلة */
+  /* أسماء أفراد العائلة المنتفعين المطابقين لنصّ البحث داخل عائلة */
   function memberHits(b, q) {
-    if (!q) return [];
+    if (!q || !App.familyMembers) return [];
     q = q.toLowerCase();
-    return (b.children || [])
-      .filter(function (k) { return k.name && k.name.toLowerCase().indexOf(q) !== -1; })
-      .map(function (k) { return k.name; });
+    return App.familyMembers(b.id)
+      .map(function (m) { return App.memberFullName ? App.memberFullName(m) : [m.firstName, m.lastName].filter(Boolean).join(" "); })
+      .filter(function (n) { return n && n.toLowerCase().indexOf(q) !== -1; });
   }
 
   /* ============ تفاصيل الملف ============ */
@@ -188,13 +189,24 @@
           '<button class="icon-btn danger" data-adel="' + a.id + '">🗑️</button></div></td></tr>';
       }).join("") : '<tr><td colspan="5" class="muted" style="text-align:center;padding:22px">لا توجد مساعدات مسجّلة بعد</td></tr>';
 
-      var kids = (b.children || []);
-      var kidsTable = kids.length ?
-        '<div class="table-wrap mt-20"><table><thead><tr><th>الاسم</th><th>تاريخ الولادة</th><th>العمر</th><th>المستوى الدراسي</th><th>العمل</th><th>الحالة الصحية</th></tr></thead><tbody>' +
-        kids.map(function (k) {
-          return "<tr><td>" + U.esc(k.name) + "</td><td>" + U.fmtDate(k.dob) + "</td><td>" + (k.dob ? U.age(k.dob) + " سنة" : "—") +
-            "</td><td>" + U.esc(k.grade || "—") + "</td><td>" + U.esc(k.work || "—") + "</td><td>" + U.esc(k.health || "عادية") + "</td></tr>";
-        }).join("") + "</tbody></table></div>" : "";
+      var mem = App.familyMembers ? App.familyMembers(id) : [];
+      var membersBlock =
+        '<div class="row-between mt-20" style="margin-bottom:8px">' +
+          '<h4 style="margin:0;font-size:14px;color:var(--green-900)">👤 المنتفعون (أفراد العائلة) — ' + U.fmtNum(mem.length) + "</h4>" +
+          '<button class="btn sm secondary no-print" id="bAddMember"><span class="ico">＋</span> إضافة فرد</button>' +
+        "</div>" +
+        (mem.length ?
+          '<div class="table-wrap"><table><thead><tr><th>الاسم</th><th>الصلة</th><th>العمر</th><th>المستوى الدراسي</th><th>الحالة الصحية</th><th>إجراءات</th></tr></thead><tbody>' +
+          mem.map(function (k) {
+            return '<tr><td><a href="#" data-mopen="' + k.id + '" style="font-weight:700">' + U.esc(App.memberFullName(k)) + "</a></td>" +
+              "<td>" + U.esc(k.relation || "—") + "</td>" +
+              "<td>" + (k.dob && U.age(k.dob) !== "" ? U.age(k.dob) + " سنة" : "—") + "</td>" +
+              "<td>" + U.esc(k.grade || "—") + "</td>" +
+              "<td>" + U.esc(k.health || "عادية") + "</td>" +
+              '<td><div class="t-actions no-print"><button class="icon-btn" data-medit="' + k.id + '">✏️</button>' +
+              '<button class="icon-btn danger" data-mdel="' + k.id + '">🗑️</button></div></td></tr>';
+          }).join("") + "</tbody></table></div>"
+          : '<div class="muted" style="padding:8px 0">لا يوجد أفراد مسجّلون لهذه العائلة. اضغط «إضافة فرد».</div>');
 
       var healthBits = [];
       if (b.chronic) healthBits.push('<span class="tag amber">مرض مزمن: ' + U.esc(b.chronicType || "غير محدّد") + "</span>");
@@ -230,12 +242,12 @@
             '<div class="card mb-16"><div class="card-head"><h3>👨‍👩‍👧 الحالة العائلية والصحية</h3></div><div class="card-body">' +
               '<div class="info-list">' +
                 info("الحالة العائلية", U.esc(b.marital)) +
-                info("عدد الأفراد", U.fmtNum(b.members || childrenCount(b) + 1)) +
+                info("عدد الأفراد", U.fmtNum(b.members || famMemberCount(b) + 1)) +
                 info("نوع العائلة", U.esc(b.familyType)) +
                 info("الحالة الصحية", healthBits.join(" ")) +
                 info("الضمان الاجتماعي", U.esc(b.ssn) + (b.cardExpiry ? " — صلوحية: " + U.fmtDate(b.cardExpiry) : "")) +
                 info("التغطية الاجتماعية", U.esc(b.coverage)) +
-              "</div>" + kidsTable +
+              "</div>" + membersBlock +
             "</div></div>" +
 
             '<div class="card mb-16"><div class="card-head"><h3>💼 الوضعية المادية والسكن</h3></div><div class="card-body">' +
@@ -264,6 +276,20 @@
       document.getElementById("bEdit").onclick = function () { openForm(id, paint); };
       document.getElementById("bPrint").onclick = function () { printFile(id); };
       document.getElementById("bAddAid").onclick = function () { App.aidForm(id, paint); };
+      var addMem = document.getElementById("bAddMember");
+      if (addMem) addMem.onclick = function () { App.memberForm(id, paint); };
+      container.querySelectorAll("[data-mopen]").forEach(function (el) {
+        el.onclick = function (e) { e.preventDefault(); App.navigate("members", { id: el.getAttribute("data-mopen") }); };
+      });
+      container.querySelectorAll("[data-medit]").forEach(function (el) {
+        el.onclick = function () { App.memberForm(null, paint, el.getAttribute("data-medit")); };
+      });
+      container.querySelectorAll("[data-mdel]").forEach(function (el) {
+        el.onclick = function () {
+          U.confirm({ title: "حذف المنتفع", danger: true, message: "حذف هذا الفرد نهائياً؟", okText: "حذف",
+            onOk: function () { DB.remove("members", el.getAttribute("data-mdel")); U.toast("تم الحذف", "info"); paint(); } });
+        };
+      });
       container.querySelectorAll("[data-aedit]").forEach(function (el) {
         el.onclick = function () { App.aidForm(id, paint, el.getAttribute("data-aedit")); };
       });
@@ -286,7 +312,6 @@
   function openForm(id, after) {
     var b = id ? DB.get(COLL, id) : {};
     var isNew = !id;
-    var children = (b.children || []).slice();
 
     function opts(list, sel) {
       return '<option value="">— اختر —</option>' + list.map(function (o) {
@@ -323,10 +348,7 @@
           '<div class="field"><label>صنف الحالة (الأولوية)</label><select data-f="category">' + opts(CATEGORY, b.category) + "</select></div>" +
           '<div class="field"><label>عدد الأفراد بالعائلة</label><input type="number" min="1" data-f="members" value="' + U.esc(b.members || "") + '" placeholder="يُحسب تلقائياً إن تُرك فارغاً"></div>' +
         "</div>" +
-        '<div style="margin-top:10px"><div class="row-between"><label style="font-size:13px;font-weight:700;color:var(--green-900)">جدول الأبناء / الأفراد المكفولين</label>' +
-          '<button type="button" class="btn sm secondary" id="addKid"><span class="ico">＋</span> إضافة سطر</button></div>' +
-          '<table class="children-table"><thead><tr><th style="width:24%">الاسم</th><th>تاريخ الولادة</th><th>المستوى الدراسي</th><th>العمل</th><th>الحالة الصحية</th><th style="width:34px"></th></tr></thead><tbody id="kidsBody"></tbody></table>' +
-        "</div>" +
+        '<div style="margin-top:10px" class="muted" style="font-size:13px">👤 يُدار أفراد العائلة (الأبناء والمكفولون) الآن من قسم «المنتفعون» المستقلّ. بعد حفظ العائلة، أضِفهم من ملفّ العائلة (زرّ «إضافة فرد») أو من قسم «المنتفعون».</div>' +
       "</fieldset>" +
 
       '<fieldset class="fieldset"><legend>④ الحالة الصحية</legend>' +
@@ -364,26 +386,6 @@
       footer: '<button class="btn" id="bSave"><span class="ico">💾</span> حفظ الملف</button>' +
               '<button class="btn secondary" id="bCancel">إلغاء</button>',
       onOpen: function (root) {
-        var kidsBody = root.querySelector("#kidsBody");
-
-        function kidRow(k) {
-          k = k || {};
-          var tr = document.createElement("tr");
-          tr.innerHTML =
-            '<td><input class="kn" value="' + U.esc(k.name || "") + '"></td>' +
-            '<td><input type="date" class="kd" value="' + U.esc(k.dob || "") + '"></td>' +
-            '<td><input class="kg" value="' + U.esc(k.grade || "") + '" placeholder="تلميذ/سنة…"></td>' +
-            '<td><input class="kw" value="' + U.esc(k.work || "") + '"></td>' +
-            '<td><select class="kh"><option' + (!k.health || k.health === "عادية" ? " selected" : "") + ">عادية</option>" +
-              "<option" + (k.health === "مرض مزمن" ? " selected" : "") + ">مرض مزمن</option>" +
-              "<option" + (k.health === "إعاقة" ? " selected" : "") + ">إعاقة</option></select></td>" +
-            '<td style="text-align:center"><span class="x" title="حذف">✕</span></td>';
-          tr.querySelector(".x").onclick = function () { tr.remove(); };
-          return tr;
-        }
-        children.forEach(function (k) { kidsBody.appendChild(kidRow(k)); });
-        root.querySelector("#addKid").onclick = function () { kidsBody.appendChild(kidRow()); };
-
         // إظهار حقل الكراء عند اختيار إيجار
         var hs = root.querySelector("#housingSel"), rentWrap = root.querySelector("#rentWrap");
         function toggleRent() { rentWrap.style.display = hs.value === "إيجار" ? "" : "none"; }
@@ -393,17 +395,7 @@
         root.querySelector("#bSave").onclick = function () {
           var data = U.formData(root);
           if (!data.firstName || !data.lastName) { U.toast("الاسم واللقب إجباريان", "error"); return; }
-          // قراءة الأبناء
-          data.children = Array.prototype.map.call(kidsBody.querySelectorAll("tr"), function (tr) {
-            return {
-              name: tr.querySelector(".kn").value.trim(),
-              dob: tr.querySelector(".kd").value,
-              grade: tr.querySelector(".kg").value.trim(),
-              work: tr.querySelector(".kw").value.trim(),
-              health: tr.querySelector(".kh").value
-            };
-          }).filter(function (k) { return k.name; });
-          if (!data.members) data.members = data.children.length + 1;
+          data.childrenMigrated = true; // الأفراد يُدارون كسجلّات مستقلّة في «المنتفعون»
 
           if (isNew) { DB.insert(COLL, data); U.toast("تمت إضافة العائلة بنجاح"); }
           else { DB.update(COLL, id, data); U.toast("تم تحديث الملف"); }
@@ -420,10 +412,10 @@
     if (!b) return;
     var aid = DB.where("aid", "beneficiaryId", id);
     function r(k, v) { return "<div><b>" + k + ":</b> " + U.esc(v || "—") + "</div>"; }
-    var kids = (b.children || []);
+    var kids = App.familyMembers ? App.familyMembers(id) : [];
     var kidsTbl = kids.length ?
-      "<h2>الأبناء / الأفراد المكفولون</h2><table><tr><th>الاسم</th><th>تاريخ الولادة</th><th>العمر</th><th>المستوى</th><th>الحالة الصحية</th></tr>" +
-      kids.map(function (k) { return "<tr><td>" + U.esc(k.name) + "</td><td>" + U.fmtDate(k.dob) + "</td><td>" + (k.dob ? U.age(k.dob) : "—") + "</td><td>" + U.esc(k.grade || "—") + "</td><td>" + U.esc(k.health || "عادية") + "</td></tr>"; }).join("") + "</table>" : "";
+      "<h2>المنتفعون (أفراد العائلة)</h2><table><tr><th>الاسم</th><th>الصلة</th><th>تاريخ الولادة</th><th>العمر</th><th>المستوى</th><th>الحالة الصحية</th></tr>" +
+      kids.map(function (k) { return "<tr><td>" + U.esc(App.memberFullName(k)) + "</td><td>" + U.esc(k.relation || "—") + "</td><td>" + U.fmtDate(k.dob) + "</td><td>" + (k.dob ? U.age(k.dob) : "—") + "</td><td>" + U.esc(k.grade || "—") + "</td><td>" + U.esc(k.health || "عادية") + "</td></tr>"; }).join("") + "</table>" : "";
     var aidTbl = aid.length ?
       "<h2>المساعدات الممنوحة</h2><table><tr><th>التاريخ</th><th>النوع</th><th>المناسبة</th><th>المقدار</th></tr>" +
       aid.map(function (a) { return "<tr><td>" + U.fmtDate(a.date) + "</td><td>" + U.esc(a.type) + "</td><td>" + U.esc(a.occasion || "—") + "</td><td>" + U.fmtMoney(a.amount) + "</td></tr>"; }).join("") + "</table>" : "";

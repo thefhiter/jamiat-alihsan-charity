@@ -18,9 +18,11 @@
     if (!q) return res;
     DB.all("beneficiaries").forEach(function (b) {
       if (U.match(b, q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "address"])) res.families.push(b);
-      (b.children || []).forEach(function (k) {
-        if (k.name && k.name.toLowerCase().indexOf(q) !== -1) res.members.push({ k: k, b: b });
-      });
+    });
+    DB.all("members").forEach(function (m) {
+      if (U.match(m, q, ["firstName", "lastName", "relation", "grade", "work", "cin"])) {
+        res.members.push({ m: m, b: m.familyId ? DB.get("beneficiaries", m.familyId) : null });
+      }
     });
     DB.all("donors").forEach(function (d) {
       if (U.match(d, q, ["firstName", "lastName", "phone", "type"])) res.donors.push(d);
@@ -72,14 +74,14 @@
       }
 
       if (r.members.length) {
-        html += '<div class="gs-group">👤 الأفراد المكفولون (' + U.fmtNum(r.members.length) + ")</div>";
-        r.members.slice(0, MAX).forEach(function (m) {
-          var age = m.k.dob && U.age(m.k.dob) !== "" ? " · " + U.age(m.k.dob) + " سنة" : "";
-          html += item("ic-gold", "👤", m.k.name, "ضمن عائلة " + U.esc(fam(m.b)) + age, "");
-          items.push({
-            fn: function () { App.navigate("beneficiaries", { id: m.b.id }); },
-            toast: "الفرد «" + m.k.name + "» مُدرَج ضمن هذه العائلة"
-          });
+        html += '<div class="gs-group">👤 المنتفعون — الأفراد (' + U.fmtNum(r.members.length) + ")</div>";
+        r.members.slice(0, MAX).forEach(function (row) {
+          var m = row.m;
+          var name = App.memberFullName ? App.memberFullName(m) : [m.firstName, m.lastName].filter(Boolean).join(" ");
+          var age = m.dob && U.age(m.dob) !== "" ? " · " + U.age(m.dob) + " سنة" : "";
+          var famTxt = row.b ? "ضمن عائلة " + U.esc(fam(row.b)) : (m.relation ? U.esc(m.relation) : "منتفع");
+          html += item("ic-gold", "👤", name, famTxt + age, m.archived ? "مؤرشف" : "");
+          items.push({ fn: function () { App.navigate("members", { id: m.id }); } });
         });
         if (r.members.length > MAX) html += more(r.members.length - MAX);
       }
