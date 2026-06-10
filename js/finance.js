@@ -134,6 +134,12 @@
       body.innerHTML = bar("إضافة مساعدة", "addBtn", "gold") +
         wrapTable(["التاريخ", "المنتفع", "نوعية الإعانة", "المناسبة", "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), "out", list.length);
       body.querySelector("#addBtn").onclick = function () { App.aidForm(null, paint); };
+      body.querySelector("#printBtn").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("المساعدات الممنوحة", ["التاريخ", "المنتفع", "نوعية الإعانة", "المناسبة", "المقدار"],
+          list.map(function (a) { return [U.fmtDate(a.date), bName(a.beneficiaryId), a.type || "—", a.occasion || "—", U.fmtMoney(a.amount)]; }),
+          { footer: "المجموع: " + U.fmtMoney(total) });
+      };
       body.querySelectorAll("[data-b]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("beneficiaries", { id: el.getAttribute("data-b") }); }; });
       body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { App.aidForm(null, paint, el.getAttribute("data-e")); }; });
       body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm("aid", el.getAttribute("data-x"), paint); }; });
@@ -150,6 +156,12 @@
       body.innerHTML = bar("تسجيل تبرّع", "addBtn", "gold") +
         wrapTable(["التاريخ", "المتبرّع", "نوعية الإعانة", "المناسبة", "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), "in", list.length);
       body.querySelector("#addBtn").onclick = function () { App.donationForm(null, paint); };
+      body.querySelector("#printBtn").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("التبرعات الواردة", ["التاريخ", "المتبرّع", "نوعية الإعانة", "المناسبة", "المقدار"],
+          list.map(function (a) { return [U.fmtDate(a.date), dName(a.donorId), a.type || "—", a.occasion || "—", U.fmtMoney(a.amount)]; }),
+          { footer: "المجموع: " + U.fmtMoney(total) });
+      };
       body.querySelectorAll("[data-d]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("donors", { id: el.getAttribute("data-d") }); }; });
       body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { App.donationForm(null, paint, el.getAttribute("data-e")); }; });
       body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm("donations", el.getAttribute("data-x"), paint); }; });
@@ -166,12 +178,20 @@
       body.innerHTML = bar("إضافة " + title, "addBtn", dir === "in" ? "" : "danger") +
         wrapTable(["التاريخ", "البيان", catLabel, "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), dir, list.length);
       body.querySelector("#addBtn").onclick = function () { formFn(paint); };
+      body.querySelector("#printBtn").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable(dir === "in" ? "المداخيل" : "المصاريف", ["التاريخ", "البيان", catLabel, "المقدار"],
+          list.map(function (a) { return [U.fmtDate(a.date), a.label || "—", a[catKey] || "—", U.fmtMoney(a.amount)]; }),
+          { footer: "المجموع: " + U.fmtMoney(total) });
+      };
       body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { formFn(paint, el.getAttribute("data-e")); }; });
       body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm(coll, el.getAttribute("data-x"), paint); }; });
     }
 
     function bar(label, id, cls) {
-      return '<div class="toolbar no-print"><div class="spacer" style="flex:1"></div><button class="btn ' + (cls || "") + '" id="' + id + '"><span class="ico">＋</span> ' + label + "</button></div>";
+      return '<div class="toolbar no-print"><div class="spacer" style="flex:1"></div>' +
+        '<button class="btn secondary" id="printBtn"><span class="ico">🖨️</span> طباعة</button>' +
+        '<button class="btn ' + (cls || "") + '" id="' + id + '"><span class="ico">＋</span> ' + label + "</button></div>";
     }
     function wrapTable(headers, rows, totalLabel, totalVal, dir, count) {
       var foot = count ? '<tfoot><tr><th colspan="' + (headers.length - 2) + '" style="text-align:left;background:var(--green-50)">' + totalLabel +

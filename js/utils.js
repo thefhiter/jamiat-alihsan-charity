@@ -198,5 +198,17 @@
     setTimeout(function () { w.focus(); w.print(); }, 350);
   };
 
+  /* ----- طباعة قائمة/جدول عام ----- */
+  U.printTable = function (title, headers, rows, opts) {
+    opts = opts || {};
+    var thead = "<tr>" + headers.map(function (h) { return "<th>" + U.esc(h) + "</th>"; }).join("") + "</tr>";
+    var tbody = rows.length
+      ? rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + U.esc(c == null ? "" : c) + "</td>"; }).join("") + "</tr>"; }).join("")
+      : '<tr><td colspan="' + headers.length + '" style="text-align:center;color:#647067;padding:14px">لا توجد بيانات</td></tr>';
+    var count = '<div style="margin:2px 0 10px;color:#647067;font-size:13px">عدد السجلّات: ' + U.fmtNum(rows.length) + "</div>";
+    var foot = opts.footer ? '<div style="margin-top:12px;font-weight:700;color:#14513c">' + U.esc(opts.footer) + "</div>" : "";
+    U.printHTML(title, (opts.subtitle ? "<h2>" + U.esc(opts.subtitle) + "</h2>" : "") + count + "<table><thead>" + thead + "</thead><tbody>" + tbody + "</tbody></table>" + foot);
+  };
+
   global.U = U;
 })(window);
