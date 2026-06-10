@@ -9,6 +9,7 @@
     { id: "dashboard",     icon: "🏠", label: "الرئيسية",  title: "الرئيسية",         sub: "نظرة عامة وإحصائيات" },
     { id: "beneficiaries", icon: "👨‍👩‍👧‍👦", label: "المنتفعون", title: "المنتفعون",        sub: "العائلات والحالات الاجتماعية", badge: function () { return DB.count("beneficiaries"); } },
     { id: "donors",        icon: "🤝", label: "المتبرّعون", title: "المتبرّعون",       sub: "المحسنون وتبرّعاتهم", badge: function () { return DB.count("donors"); } },
+    { id: "ihsan",         icon: "📋", label: "استمارة الإحسان", title: "استمارة جمعية الإحسان", sub: "العائلة المنتفعة والمتبرّع في استمارة واحدة", badge: function () { return DB.count("ihsan"); } },
     { id: "finance",       icon: "💰", label: "الشأن المالي", title: "الشأن المالي",    sub: "المساعدات والتبرعات والمصاريف والمداخيل" },
     { id: "settings",      icon: "⚙️", label: "الإعدادات", title: "الإعدادات",        sub: "معلومات الجمعية والنسخ الاحتياطي" }
   ];
