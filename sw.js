@@ -3,13 +3,14 @@
    الاستراتيجية: «الشبكة أوّلاً» (Network First) ليُفتح دائماً أحدث
    إصدار عند توفّر الإنترنت، مع الرجوع إلى النسخة المخزّنة عند انقطاعه.
    ================================================================= */
-var CACHE = "ihsan-v2";
+var CACHE = "ihsan-v3";
 var ASSETS = [
   "./", "index.html", "manifest.webmanifest",
   "css/styles.css",
   "js/db.js", "js/utils.js", "js/beneficiaries.js", "js/members.js",
-  "js/donors.js", "js/ihsan.js", "js/finance.js", "js/dashboard.js",
+  "js/donors.js", "js/finance.js", "js/dashboard.js",
   "js/settings.js", "js/search.js", "js/app.js",
+  "assets/logo-mark.png", "assets/logo.png",
   "build/icon-192.png", "build/icon-512.png"
 ];
 

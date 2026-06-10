@@ -79,13 +79,14 @@ a { color: var(--green-700); text-decoration: none; }
   width: 46px; height: 46px;
   flex: 0 0 46px;
   border-radius: 12px;
-  background: radial-gradient(circle at 30% 30%, var(--gold-500), var(--gold-600));
-  display: grid; place-items: center;
-  font-size: 24px;
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25);
+  background: #fff;
+  object-fit: contain;
+  padding: 3px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25), 0 2px 8px rgba(15,61,46,0.30);
 }
 .brand h1 { font-size: 16px; margin: 0; font-weight: 800; line-height: 1.35; }
 .brand span { font-size: 11.5px; color: #aeccbd; display: block; }
+.brand .brand-slogan { color: var(--gold-500); font-size: 12px; font-weight: 800; margin-top: 3px; }
 
 .nav { padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .nav button {
@@ -244,6 +245,31 @@ a { color: var(--green-700); text-decoration: none; }
 .stat.gold  .ico-bg { background: var(--gold-100); color: var(--gold-600); }
 .stat.blue  .ico-bg { background: #e6effe; color: var(--info); }
 .stat.red   .ico-bg { background: var(--danger-bg); color: var(--danger); }
+
+/* ---------- ترويسة الرئيسية (الشعار + الشعار النصّي) ---------- */
+.home-hero {
+  display: flex; align-items: center; gap: 18px;
+  background: linear-gradient(110deg, var(--green-100), #ffffff 55%, var(--gold-100));
+  border: 1px solid var(--green-100);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 22px;
+  margin-bottom: 18px;
+}
+.home-hero img {
+  width: 64px; height: 64px; flex: 0 0 64px;
+  object-fit: contain; border-radius: 12px; background: #fff;
+  box-shadow: var(--shadow);
+}
+.home-hero .ht { min-width: 0; }
+.home-hero .ht h2 { margin: 0; font-size: 21px; font-weight: 800; color: var(--green-900); }
+.home-hero .ht .slogan { color: var(--gold-600); font-weight: 800; font-size: 16px; margin-top: 3px; }
+@media (max-width: 760px) {
+  .home-hero { gap: 14px; padding: 14px 16px; }
+  .home-hero img { width: 54px; height: 54px; flex-basis: 54px; }
+  .home-hero .ht h2 { font-size: 18px; }
+  .home-hero .ht .slogan { font-size: 14px; }
+}
 
 /* ---------- Toolbar / search ---------- */
 .toolbar {

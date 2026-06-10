@@ -54,8 +54,11 @@
     }
 
     container.innerHTML =
-      '<div class="toolbar no-print"><div class="spacer" style="flex:1"></div>' +
-        '<button class="btn secondary" id="dashPrint"><span class="ico">🖨️</span> طباعة لوحة الإحصائيات</button></div>' +
+      '<div class="home-hero no-print">' +
+        '<img src="assets/logo-mark.png" alt="شعار جمعية الإحسان الخيرية">' +
+        '<div class="ht"><h2>' + U.esc(s.orgName || "جمعية الإحسان الخيرية") + "</h2>" +
+        '<div class="slogan">تهدي لك فعل الخير</div></div>' +
+      "</div>" +
       '<div class="cards grid-4 mb-16">' +
         stat("green", "👨‍👩‍👧‍👦", "العائلات", U.fmtNum(ben.length), "عائلة") +
         stat("gold", "👤", "المنتفعون (الأفراد)", U.fmtNum(mem.length), "فرد") +
@@ -80,7 +83,10 @@
           '<div class="table-wrap" style="border:none;box-shadow:none;border-radius:0"><table><thead><tr><th>التاريخ</th><th>المنتفع</th><th>المقدار</th></tr></thead><tbody>' + activityRows(recentAid, bName, "out") + "</tbody></table></div></div>" +
         '<div class="card"><div class="card-head"><h3>🤝 آخر التبرعات</h3><div class="spacer"></div><button class="btn sm secondary" data-go="donors">عرض الكل</button></div>' +
           '<div class="table-wrap" style="border:none;box-shadow:none;border-radius:0"><table><thead><tr><th>التاريخ</th><th>المتبرّع</th><th>المقدار</th></tr></thead><tbody>' + activityRows(recentDon, dName, "in") + "</tbody></table></div></div>" +
-      "</div>";
+      "</div>" +
+
+      '<div class="toolbar no-print" style="margin-top:20px;justify-content:flex-end">' +
+        '<button class="btn secondary" id="dashPrint"><span class="ico">🖨️</span> طباعة لوحة الإحصائيات</button></div>';
 
     container.querySelectorAll("[data-go]").forEach(function (el) {
       el.onclick = function () { App.navigate(el.getAttribute("data-go")); };

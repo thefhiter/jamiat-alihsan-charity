@@ -29,6 +29,18 @@ html = html.replace(/<script src="(js\/[^"]+)"><\/script>/g, function (_, src) {
   return "<script>\n" + code + "\n</script>";
 });
 
+// 3.5) تضمين الصور المحلّية (الشعار/الأيقونة) كـ data URI ليبقى الملفّ مكتفياً بذاته
+const MIME = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", svg: "image/svg+xml", webp: "image/webp", ico: "image/x-icon", gif: "image/gif" };
+const imgRefs = html.match(/(?:assets|build)\/[A-Za-z0-9._\-]+\.(?:png|jpe?g|svg|webp|ico|gif)/g) || [];
+[...new Set(imgRefs)].forEach(function (rel) {
+  const ext = rel.split(".").pop().toLowerCase();
+  let data;
+  try { data = fs.readFileSync(path.join(ROOT, rel)); }
+  catch (e) { console.error("⚠️ تعذّر تضمين الصورة: " + rel + " (غير موجودة)"); return; }
+  const uri = "data:" + (MIME[ext] || "application/octet-stream") + ";base64," + data.toString("base64");
+  html = html.split(rel).join(uri);
+});
+
 // 4) ملاحظة في الترويسة
 html = html.replace(
   /<title>([\s\S]*?)<\/title>/,
