@@ -6,7 +6,7 @@
   "use strict";
 
   var PREFIX = "ihsan:";
-  var COLLECTIONS = ["beneficiaries", "donors", "aid", "donations", "expenses", "incomes", "ihsan"];
+  var COLLECTIONS = ["beneficiaries", "members", "donors", "aid", "donations", "expenses", "incomes", "ihsan"];
   var SCHEMA_VERSION = 1;
 
   function key(name) { return PREFIX + name; }
@@ -153,6 +153,44 @@
       return COLLECTIONS.every(function (c) { return read(c).length === 0; });
     }
   };
+
+  /* -----------------------------------------------------------------
+     ترحيل لمرّة واحدة: تحويل «الأبناء/الأفراد» المضمّنين داخل ملفّ العائلة
+     (children[]) إلى سجلّات مستقلّة في مجموعة «المنتفعون» (members)،
+     مع ربط كل فرد بعائلته. عملية آمنة وقابلة للتكرار (محميّة بعلامة لكل عائلة).
+     ----------------------------------------------------------------- */
+  function migrateMembers() {
+    var fams = read("beneficiaries");
+    if (!fams.length) return;
+    var members = read("members");
+    var membersChanged = false, famsChanged = false;
+    fams.forEach(function (b) {
+      if (b.childrenMigrated) return;
+      (b.children || []).forEach(function (k) {
+        if (!k || !k.name) return;
+        members.push({
+          id: uid(),
+          createdAt: new Date().toISOString(),
+          archived: false,
+          familyId: b.id,
+          firstName: k.name,
+          lastName: "",
+          relation: "ابن / بنت",
+          dob: k.dob || "",
+          grade: k.grade || "",
+          work: k.work || "",
+          health: k.health || "عادية"
+        });
+        membersChanged = true;
+      });
+      b.childrenMigrated = true;
+      famsChanged = true;
+    });
+    if (membersChanged) write("members", members);
+    if (famsChanged) write("beneficiaries", fams);
+  }
+
+  try { migrateMembers(); } catch (e) { console.error("members migration failed", e); }
 
   global.DB = DB;
 })(window);
