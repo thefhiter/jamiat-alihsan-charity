@@ -20,8 +20,8 @@
       if (U.match(b, q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "address"])) res.families.push(b);
     });
     DB.all("members").forEach(function (m) {
-      if (U.match(m, q, ["firstName", "lastName", "relation", "grade", "work", "cin"])) {
-        res.members.push({ m: m, b: m.familyId ? DB.get("beneficiaries", m.familyId) : null });
+      if (U.match(m, q, ["firstName", "lastName", "nickname", "fileNo", "cin", "phone", "grade", "work"])) {
+        res.members.push({ m: m });
       }
     });
     DB.all("donors").forEach(function (d) {
@@ -79,8 +79,8 @@
           var m = row.m;
           var name = App.memberFullName ? App.memberFullName(m) : [m.firstName, m.lastName].filter(Boolean).join(" ");
           var age = m.dob && U.age(m.dob) !== "" ? " · " + U.age(m.dob) + " سنة" : "";
-          var famTxt = row.b ? "ضمن عائلة " + U.esc(fam(row.b)) : (m.relation ? U.esc(m.relation) : "منتفع");
-          html += item("ic-gold", "👤", name, famTxt + age, m.archived ? "مؤرشف" : "");
+          var sub = "رقم الملف: " + U.esc(m.fileNo || "—") + (m.phone ? " · ☎ " + U.esc(m.phone) : "") + age;
+          html += item("ic-gold", "👤", name, sub, m.archived ? "مؤرشف" : "");
           items.push({ fn: function () { App.navigate("members", { id: m.id }); } });
         });
         if (r.members.length > MAX) html += more(r.members.length - MAX);
