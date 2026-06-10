@@ -64,6 +64,7 @@
             '<button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">السجلّات النشطة</button>' +
             '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button>' +
           "</div><div class='spacer' style='flex:1'></div>" +
+          '<button class="btn secondary" id="iPrintList"><span class="ico">🖨️</span> طباعة القائمة</button>' +
           '<button class="btn secondary" id="iExport"><span class="ico">⬇️</span> تصدير Excel</button>' +
           '<button class="btn" id="iAdd"><span class="ico">＋</span> إضافة استمارة</button>' +
         "</div>" + body;
@@ -72,6 +73,15 @@
       srch.oninput = U.debounce(function () { state.q = srch.value; paint(); var n = document.getElementById("iSearch"); if (n) { n.focus(); n.selectionStart = n.value.length; } }, 180);
       document.getElementById("iAdd").onclick = function () { openForm(null, paint); };
       document.getElementById("iExport").onclick = exportCSV;
+      document.getElementById("iPrintList").onclick = function () {
+        var l = rows();
+        if (!l.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("استمارات جمعية الإحسان", ["العائلة المنتفعة", "التاريخ", "المقدار", "نوعية الإعانة", "المتبرّع", "مقدار التبرّع"],
+          l.map(function (r) {
+            return [r.benFamily || "—", r.benDate ? U.fmtDate(r.benDate) : "—", r.benAmount ? U.fmtMoney(r.benAmount) : "—",
+              r.benAidType || "—", [r.donorName, r.donorLastName].filter(Boolean).join(" ") || "—", r.donorAmount ? U.fmtMoney(r.donorAmount) : "—"];
+          }));
+      };
       container.querySelectorAll("[data-flt]").forEach(function (el) {
         el.onclick = function () { state.filter = el.getAttribute("data-flt"); state.q = ""; paint(); };
       });

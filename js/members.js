@@ -106,6 +106,7 @@
             '<button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">النشطون</button>' +
             '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button>' +
           "</div>" + famFilter + "<div class='spacer' style='flex:1'></div>" +
+          '<button class="btn secondary" id="mPrintList"><span class="ico">🖨️</span> طباعة القائمة</button>' +
           '<button class="btn secondary" id="mExport"><span class="ico">⬇️</span> تصدير Excel</button>' +
           '<button class="btn" id="mAdd"' + (fams.length ? "" : " disabled title='أضف عائلة أولاً'") + '><span class="ico">＋</span> إضافة منتفع</button>' +
         "</div>" + body;
@@ -118,6 +119,15 @@
         App.memberForm(state.fam || null, paint);
       };
       document.getElementById("mExport").onclick = exportCSV;
+      document.getElementById("mPrintList").onclick = function () {
+        var l = rows();
+        if (!l.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("قائمة المنتفعين", ["رقم الملف", "الاسم واللقب", "العائلة", "الصلة", "العمر", "الحالة الصحية"],
+          l.map(function (m) {
+            return [m.fileNo || "—", fullName(m), famName(m.familyId) || "—", m.relation || "—",
+              (m.dob && U.age(m.dob) !== "" ? U.age(m.dob) + " سنة" : "—"), healthSummary(m)];
+          }), { subtitle: "المنتفعون" + (state.fam ? " — عائلة: " + famName(state.fam) : "") });
+      };
       container.querySelectorAll("[data-flt]").forEach(function (el) {
         el.onclick = function () { state.filter = el.getAttribute("data-flt"); state.q = ""; paint(); };
       });
@@ -186,6 +196,7 @@
     container.innerHTML =
       '<div class="toolbar no-print">' +
         '<button class="btn ghost" id="mBack">→ رجوع للقائمة</button><div class="spacer" style="flex:1"></div>' +
+        '<button class="btn secondary" id="mPrint"><span class="ico">🖨️</span> طباعة البطاقة</button>' +
         '<button class="btn" id="mEdit"><span class="ico">✏️</span> تعديل</button>' +
       "</div>" +
       '<div class="detail-grid">' +
@@ -228,6 +239,7 @@
       "</div>";
 
     document.getElementById("mBack").onclick = function () { App.navigate("members"); };
+    document.getElementById("mPrint").onclick = function () { printMember(id); };
     document.getElementById("mEdit").onclick = function () { App.memberForm(null, function () { detail(container, id); }, id); };
     var goFam = document.getElementById("mGoFam");
     if (goFam) goFam.onclick = function (e) { e.preventDefault(); App.navigate("beneficiaries", { id: m.familyId }); };
@@ -342,6 +354,29 @@
       }
     });
   };
+
+  /* ============ طباعة بطاقة المنتفع ============ */
+  function printMember(id) {
+    var m = DB.get(COLL, id);
+    if (!m) return;
+    function r(k, v) { return "<div><b>" + k + ":</b> " + U.esc(v || "—") + "</div>"; }
+    var html =
+      "<h2>بطاقة منتفع — رقم الملف: " + U.esc(m.fileNo || "—") + "</h2>" +
+      '<div class="kv">' +
+        r("الاسم واللقب", fullName(m)) + r("العائلة", famName(m.familyId)) +
+        r("الصلة بالعائلة", m.relation) + r("ب.ت.و", m.cin) +
+        r("تاريخ ومكان الولادة", U.fmtDate(m.dob) + " — " + (m.birthPlace || "")) + r("الهاتف", m.phone) +
+        r("الحالة العائلية", m.marital) + r("نوع العائلة", m.familyType) +
+        r("صنف الحالة", m.category) + r("الضمان الاجتماعي", m.ssn) +
+        r("صلوحية البطاقة", m.cardExpiry ? U.fmtDate(m.cardExpiry) : "—") + r("التغطية الاجتماعية", m.coverage) +
+        r("الحالة الصحية", healthSummary(m)) + r("المستوى الدراسي", m.grade) +
+        r("العمل", m.work) + r("تقدير الدخل", m.income ? U.fmtMoney(m.income) : "—") +
+        r("السكن", (m.housing || "") + (m.rent ? " — كراء " + U.fmtMoney(m.rent) : "")) + r("العنوان", (m.address || "") + " " + (m.postal || "")) +
+      "</div>" +
+      (m.notes ? "<h2>توصيف الحالة</h2><p>" + U.esc(m.notes) + "</p>" : "") +
+      '<div class="sign"><div><div class="line">إمضاء العون المكلّف</div></div><div><div class="line">إمضاء رئيس اللجنة</div></div></div>';
+    U.printHTML("بطاقة منتفع — " + fullName(m), html);
+  }
 
   /* أفراد عائلة معيّنة (غير المؤرشفين) */
   App.familyMembers = function (familyId, includeArchived) {

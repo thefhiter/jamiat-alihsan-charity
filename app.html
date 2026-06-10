@@ -962,6 +962,18 @@ tbody tr:hover { background: var(--green-50); }
     setTimeout(function () { w.focus(); w.print(); }, 350);
   };
 
+  /* ----- طباعة قائمة/جدول عام ----- */
+  U.printTable = function (title, headers, rows, opts) {
+    opts = opts || {};
+    var thead = "<tr>" + headers.map(function (h) { return "<th>" + U.esc(h) + "</th>"; }).join("") + "</tr>";
+    var tbody = rows.length
+      ? rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + U.esc(c == null ? "" : c) + "</td>"; }).join("") + "</tr>"; }).join("")
+      : '<tr><td colspan="' + headers.length + '" style="text-align:center;color:#647067;padding:14px">لا توجد بيانات</td></tr>';
+    var count = '<div style="margin:2px 0 10px;color:#647067;font-size:13px">عدد السجلّات: ' + U.fmtNum(rows.length) + "</div>";
+    var foot = opts.footer ? '<div style="margin-top:12px;font-weight:700;color:#14513c">' + U.esc(opts.footer) + "</div>" : "";
+    U.printHTML(title, (opts.subtitle ? "<h2>" + U.esc(opts.subtitle) + "</h2>" : "") + count + "<table><thead>" + thead + "</thead><tbody>" + tbody + "</tbody></table>" + foot);
+  };
+
   global.U = U;
 })(window);
 
@@ -1061,6 +1073,7 @@ tbody tr:hover { background: var(--green-50); }
             '<button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">الحالات النشطة</button>' +
             '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button>' +
           "</div><div class='spacer' style='flex:1'></div>" +
+          '<button class="btn secondary" id="bPrintList"><span class="ico">🖨️</span> طباعة القائمة</button>' +
           '<button class="btn secondary" id="bExport"><span class="ico">⬇️</span> تصدير Excel</button>' +
           '<button class="btn" id="bAdd"><span class="ico">＋</span> إضافة عائلة</button>' +
         "</div>" + body;
@@ -1069,6 +1082,15 @@ tbody tr:hover { background: var(--green-50); }
       srch.oninput = U.debounce(function () { state.q = srch.value; paint(); keepFocus(); }, 180);
       document.getElementById("bAdd").onclick = function () { openForm(null, paint); };
       document.getElementById("bExport").onclick = exportCSV;
+      document.getElementById("bPrintList").onclick = function () {
+        var l = rows();
+        if (!l.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("قائمة العائلات", ["رقم الملف", "الاسم واللقب", "الهاتف", "الحالة العائلية", "عدد الأفراد", "الصنف", "المساعدات"],
+          l.map(function (b) {
+            return [b.fileNo || "—", fullName(b), b.phone || "—", b.marital || "—",
+              b.members || famMemberCount(b) + 1, b.category || "—", DB.where("aid", "beneficiaryId", b.id).length];
+          }), { subtitle: state.filter === "archived" ? "الأرشيف" : "الحالات النشطة" });
+      };
       container.querySelectorAll("[data-flt]").forEach(function (el) {
         el.onclick = function () { state.filter = el.getAttribute("data-flt"); state.q = ""; paint(); };
       });
@@ -1521,6 +1543,7 @@ tbody tr:hover { background: var(--green-50); }
             '<button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">النشطون</button>' +
             '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button>' +
           "</div>" + famFilter + "<div class='spacer' style='flex:1'></div>" +
+          '<button class="btn secondary" id="mPrintList"><span class="ico">🖨️</span> طباعة القائمة</button>' +
           '<button class="btn secondary" id="mExport"><span class="ico">⬇️</span> تصدير Excel</button>' +
           '<button class="btn" id="mAdd"' + (fams.length ? "" : " disabled title='أضف عائلة أولاً'") + '><span class="ico">＋</span> إضافة منتفع</button>' +
         "</div>" + body;
@@ -1533,6 +1556,15 @@ tbody tr:hover { background: var(--green-50); }
         App.memberForm(state.fam || null, paint);
       };
       document.getElementById("mExport").onclick = exportCSV;
+      document.getElementById("mPrintList").onclick = function () {
+        var l = rows();
+        if (!l.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("قائمة المنتفعين", ["رقم الملف", "الاسم واللقب", "العائلة", "الصلة", "العمر", "الحالة الصحية"],
+          l.map(function (m) {
+            return [m.fileNo || "—", fullName(m), famName(m.familyId) || "—", m.relation || "—",
+              (m.dob && U.age(m.dob) !== "" ? U.age(m.dob) + " سنة" : "—"), healthSummary(m)];
+          }), { subtitle: "المنتفعون" + (state.fam ? " — عائلة: " + famName(state.fam) : "") });
+      };
       container.querySelectorAll("[data-flt]").forEach(function (el) {
         el.onclick = function () { state.filter = el.getAttribute("data-flt"); state.q = ""; paint(); };
       });
@@ -1601,6 +1633,7 @@ tbody tr:hover { background: var(--green-50); }
     container.innerHTML =
       '<div class="toolbar no-print">' +
         '<button class="btn ghost" id="mBack">→ رجوع للقائمة</button><div class="spacer" style="flex:1"></div>' +
+        '<button class="btn secondary" id="mPrint"><span class="ico">🖨️</span> طباعة البطاقة</button>' +
         '<button class="btn" id="mEdit"><span class="ico">✏️</span> تعديل</button>' +
       "</div>" +
       '<div class="detail-grid">' +
@@ -1643,6 +1676,7 @@ tbody tr:hover { background: var(--green-50); }
       "</div>";
 
     document.getElementById("mBack").onclick = function () { App.navigate("members"); };
+    document.getElementById("mPrint").onclick = function () { printMember(id); };
     document.getElementById("mEdit").onclick = function () { App.memberForm(null, function () { detail(container, id); }, id); };
     var goFam = document.getElementById("mGoFam");
     if (goFam) goFam.onclick = function (e) { e.preventDefault(); App.navigate("beneficiaries", { id: m.familyId }); };
@@ -1758,6 +1792,29 @@ tbody tr:hover { background: var(--green-50); }
     });
   };
 
+  /* ============ طباعة بطاقة المنتفع ============ */
+  function printMember(id) {
+    var m = DB.get(COLL, id);
+    if (!m) return;
+    function r(k, v) { return "<div><b>" + k + ":</b> " + U.esc(v || "—") + "</div>"; }
+    var html =
+      "<h2>بطاقة منتفع — رقم الملف: " + U.esc(m.fileNo || "—") + "</h2>" +
+      '<div class="kv">' +
+        r("الاسم واللقب", fullName(m)) + r("العائلة", famName(m.familyId)) +
+        r("الصلة بالعائلة", m.relation) + r("ب.ت.و", m.cin) +
+        r("تاريخ ومكان الولادة", U.fmtDate(m.dob) + " — " + (m.birthPlace || "")) + r("الهاتف", m.phone) +
+        r("الحالة العائلية", m.marital) + r("نوع العائلة", m.familyType) +
+        r("صنف الحالة", m.category) + r("الضمان الاجتماعي", m.ssn) +
+        r("صلوحية البطاقة", m.cardExpiry ? U.fmtDate(m.cardExpiry) : "—") + r("التغطية الاجتماعية", m.coverage) +
+        r("الحالة الصحية", healthSummary(m)) + r("المستوى الدراسي", m.grade) +
+        r("العمل", m.work) + r("تقدير الدخل", m.income ? U.fmtMoney(m.income) : "—") +
+        r("السكن", (m.housing || "") + (m.rent ? " — كراء " + U.fmtMoney(m.rent) : "")) + r("العنوان", (m.address || "") + " " + (m.postal || "")) +
+      "</div>" +
+      (m.notes ? "<h2>توصيف الحالة</h2><p>" + U.esc(m.notes) + "</p>" : "") +
+      '<div class="sign"><div><div class="line">إمضاء العون المكلّف</div></div><div><div class="line">إمضاء رئيس اللجنة</div></div></div>';
+    U.printHTML("بطاقة منتفع — " + fullName(m), html);
+  }
+
   /* أفراد عائلة معيّنة (غير المؤرشفين) */
   App.familyMembers = function (familyId, includeArchived) {
     return DB.where(COLL, "familyId", familyId).filter(function (m) { return includeArchived || !m.archived; });
@@ -1827,6 +1884,7 @@ tbody tr:hover { background: var(--green-50); }
           '<div class="filter-pills"><button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">النشطون</button>' +
           '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button></div>' +
           '<div class="spacer" style="flex:1"></div>' +
+          '<button class="btn secondary" id="dPrintList"><span class="ico">🖨️</span> طباعة القائمة</button>' +
           '<button class="btn secondary" id="dExport"><span class="ico">⬇️</span> تصدير</button>' +
           '<button class="btn" id="dAdd"><span class="ico">＋</span> إضافة متبرّع</button>' +
         "</div>" + body;
@@ -1840,6 +1898,13 @@ tbody tr:hover { background: var(--green-50); }
           { label: "الهاتف", key: "phone" }, { label: "عدد التبرعات", get: function (d) { return DB.where(DON, "donorId", d.id).length; } },
           { label: "مجموع التبرعات", get: function (d) { return donorTotal(d.id); } }];
         U.download("المتبرعون-" + U.today() + ".csv", U.toCSV(list, headers), "text/csv"); U.toast("تم التصدير");
+      };
+      document.getElementById("dPrintList").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("قائمة المتبرّعين", ["الاسم واللقب", "الصفة", "الهاتف", "عدد التبرعات", "مجموع التبرعات"],
+          list.map(function (d) {
+            return [fullName(d), d.type || "فرد", d.phone || "—", DB.where(DON, "donorId", d.id).length, U.fmtMoney(donorTotal(d.id))];
+          }), { subtitle: state.filter === "archived" ? "الأرشيف" : "النشطون" });
       };
       container.querySelectorAll("[data-flt]").forEach(function (el) { el.onclick = function () { state.filter = el.getAttribute("data-flt"); paint(); }; });
       container.querySelectorAll("[data-open]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("donors", { id: el.getAttribute("data-open") }); }; });
@@ -2050,6 +2115,7 @@ tbody tr:hover { background: var(--green-50); }
             '<button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">السجلّات النشطة</button>' +
             '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button>' +
           "</div><div class='spacer' style='flex:1'></div>" +
+          '<button class="btn secondary" id="iPrintList"><span class="ico">🖨️</span> طباعة القائمة</button>' +
           '<button class="btn secondary" id="iExport"><span class="ico">⬇️</span> تصدير Excel</button>' +
           '<button class="btn" id="iAdd"><span class="ico">＋</span> إضافة استمارة</button>' +
         "</div>" + body;
@@ -2058,6 +2124,15 @@ tbody tr:hover { background: var(--green-50); }
       srch.oninput = U.debounce(function () { state.q = srch.value; paint(); var n = document.getElementById("iSearch"); if (n) { n.focus(); n.selectionStart = n.value.length; } }, 180);
       document.getElementById("iAdd").onclick = function () { openForm(null, paint); };
       document.getElementById("iExport").onclick = exportCSV;
+      document.getElementById("iPrintList").onclick = function () {
+        var l = rows();
+        if (!l.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("استمارات جمعية الإحسان", ["العائلة المنتفعة", "التاريخ", "المقدار", "نوعية الإعانة", "المتبرّع", "مقدار التبرّع"],
+          l.map(function (r) {
+            return [r.benFamily || "—", r.benDate ? U.fmtDate(r.benDate) : "—", r.benAmount ? U.fmtMoney(r.benAmount) : "—",
+              r.benAidType || "—", [r.donorName, r.donorLastName].filter(Boolean).join(" ") || "—", r.donorAmount ? U.fmtMoney(r.donorAmount) : "—"];
+          }));
+      };
       container.querySelectorAll("[data-flt]").forEach(function (el) {
         el.onclick = function () { state.filter = el.getAttribute("data-flt"); state.q = ""; paint(); };
       });
@@ -2356,6 +2431,12 @@ tbody tr:hover { background: var(--green-50); }
       body.innerHTML = bar("إضافة مساعدة", "addBtn", "gold") +
         wrapTable(["التاريخ", "المنتفع", "نوعية الإعانة", "المناسبة", "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), "out", list.length);
       body.querySelector("#addBtn").onclick = function () { App.aidForm(null, paint); };
+      body.querySelector("#printBtn").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("المساعدات الممنوحة", ["التاريخ", "المنتفع", "نوعية الإعانة", "المناسبة", "المقدار"],
+          list.map(function (a) { return [U.fmtDate(a.date), bName(a.beneficiaryId), a.type || "—", a.occasion || "—", U.fmtMoney(a.amount)]; }),
+          { footer: "المجموع: " + U.fmtMoney(total) });
+      };
       body.querySelectorAll("[data-b]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("beneficiaries", { id: el.getAttribute("data-b") }); }; });
       body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { App.aidForm(null, paint, el.getAttribute("data-e")); }; });
       body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm("aid", el.getAttribute("data-x"), paint); }; });
@@ -2372,6 +2453,12 @@ tbody tr:hover { background: var(--green-50); }
       body.innerHTML = bar("تسجيل تبرّع", "addBtn", "gold") +
         wrapTable(["التاريخ", "المتبرّع", "نوعية الإعانة", "المناسبة", "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), "in", list.length);
       body.querySelector("#addBtn").onclick = function () { App.donationForm(null, paint); };
+      body.querySelector("#printBtn").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("التبرعات الواردة", ["التاريخ", "المتبرّع", "نوعية الإعانة", "المناسبة", "المقدار"],
+          list.map(function (a) { return [U.fmtDate(a.date), dName(a.donorId), a.type || "—", a.occasion || "—", U.fmtMoney(a.amount)]; }),
+          { footer: "المجموع: " + U.fmtMoney(total) });
+      };
       body.querySelectorAll("[data-d]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("donors", { id: el.getAttribute("data-d") }); }; });
       body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { App.donationForm(null, paint, el.getAttribute("data-e")); }; });
       body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm("donations", el.getAttribute("data-x"), paint); }; });
@@ -2388,12 +2475,20 @@ tbody tr:hover { background: var(--green-50); }
       body.innerHTML = bar("إضافة " + title, "addBtn", dir === "in" ? "" : "danger") +
         wrapTable(["التاريخ", "البيان", catLabel, "المقدار", "إجراءات"], rows, "المجموع", U.fmtMoney(total), dir, list.length);
       body.querySelector("#addBtn").onclick = function () { formFn(paint); };
+      body.querySelector("#printBtn").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable(dir === "in" ? "المداخيل" : "المصاريف", ["التاريخ", "البيان", catLabel, "المقدار"],
+          list.map(function (a) { return [U.fmtDate(a.date), a.label || "—", a[catKey] || "—", U.fmtMoney(a.amount)]; }),
+          { footer: "المجموع: " + U.fmtMoney(total) });
+      };
       body.querySelectorAll("[data-e]").forEach(function (el) { el.onclick = function () { formFn(paint, el.getAttribute("data-e")); }; });
       body.querySelectorAll("[data-x]").forEach(function (el) { el.onclick = function () { delConfirm(coll, el.getAttribute("data-x"), paint); }; });
     }
 
     function bar(label, id, cls) {
-      return '<div class="toolbar no-print"><div class="spacer" style="flex:1"></div><button class="btn ' + (cls || "") + '" id="' + id + '"><span class="ico">＋</span> ' + label + "</button></div>";
+      return '<div class="toolbar no-print"><div class="spacer" style="flex:1"></div>' +
+        '<button class="btn secondary" id="printBtn"><span class="ico">🖨️</span> طباعة</button>' +
+        '<button class="btn ' + (cls || "") + '" id="' + id + '"><span class="ico">＋</span> ' + label + "</button></div>";
     }
     function wrapTable(headers, rows, totalLabel, totalVal, dir, count) {
       var foot = count ? '<tfoot><tr><th colspan="' + (headers.length - 2) + '" style="text-align:left;background:var(--green-50)">' + totalLabel +
@@ -2467,6 +2562,8 @@ tbody tr:hover { background: var(--green-50); }
     }
 
     container.innerHTML =
+      '<div class="toolbar no-print"><div class="spacer" style="flex:1"></div>' +
+        '<button class="btn secondary" id="dashPrint"><span class="ico">🖨️</span> طباعة لوحة الإحصائيات</button></div>' +
       '<div class="cards grid-4 mb-16">' +
         stat("green", "👨‍👩‍👧‍👦", "العائلات", U.fmtNum(ben.length), "عائلة") +
         stat("gold", "👤", "المنتفعون (الأفراد)", U.fmtNum(mem.length), "فرد") +
@@ -2496,6 +2593,22 @@ tbody tr:hover { background: var(--green-50); }
     container.querySelectorAll("[data-go]").forEach(function (el) {
       el.onclick = function () { App.navigate(el.getAttribute("data-go")); };
     });
+
+    document.getElementById("dashPrint").onclick = function () {
+      var rows = [
+        ["العائلات", U.fmtNum(ben.length) + " عائلة"],
+        ["المنتفعون (الأفراد)", U.fmtNum(mem.length) + " فرد"],
+        ["المتبرّعون", U.fmtNum(don.length) + " متبرّع"],
+        ["إجمالي التبرعات والمداخيل", U.fmtMoney(inflow)],
+        ["إجمالي المساعدات الممنوحة", U.fmtMoney(totalAid)],
+        ["إجمالي المصاريف", U.fmtMoney(totalExpense)],
+        ["الرصيد الصافي", U.fmtMoney(balance)],
+        ["عدد عمليات المساعدة", U.fmtNum(DB.count("aid", true)) + " عملية"],
+        ["عائلات استفادت فعلياً", U.fmtNum(familiesServed) + " عائلة"]
+      ];
+      var kv = '<div class="kv">' + rows.map(function (r) { return "<div><b>" + r[0] + ":</b> " + U.esc(r[1]) + "</div>"; }).join("") + "</div>";
+      U.printHTML("لوحة الإحصائيات — " + s.orgName, "<h2>ملخّص عام</h2>" + kv);
+    };
 
     // ترحيب عند فراغ البيانات
     if (DB.isEmpty()) {

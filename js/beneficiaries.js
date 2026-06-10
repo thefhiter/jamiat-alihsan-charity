@@ -92,6 +92,7 @@
             '<button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">الحالات النشطة</button>' +
             '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button>' +
           "</div><div class='spacer' style='flex:1'></div>" +
+          '<button class="btn secondary" id="bPrintList"><span class="ico">🖨️</span> طباعة القائمة</button>' +
           '<button class="btn secondary" id="bExport"><span class="ico">⬇️</span> تصدير Excel</button>' +
           '<button class="btn" id="bAdd"><span class="ico">＋</span> إضافة عائلة</button>' +
         "</div>" + body;
@@ -100,6 +101,15 @@
       srch.oninput = U.debounce(function () { state.q = srch.value; paint(); keepFocus(); }, 180);
       document.getElementById("bAdd").onclick = function () { openForm(null, paint); };
       document.getElementById("bExport").onclick = exportCSV;
+      document.getElementById("bPrintList").onclick = function () {
+        var l = rows();
+        if (!l.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("قائمة العائلات", ["رقم الملف", "الاسم واللقب", "الهاتف", "الحالة العائلية", "عدد الأفراد", "الصنف", "المساعدات"],
+          l.map(function (b) {
+            return [b.fileNo || "—", fullName(b), b.phone || "—", b.marital || "—",
+              b.members || famMemberCount(b) + 1, b.category || "—", DB.where("aid", "beneficiaryId", b.id).length];
+          }), { subtitle: state.filter === "archived" ? "الأرشيف" : "الحالات النشطة" });
+      };
       container.querySelectorAll("[data-flt]").forEach(function (el) {
         el.onclick = function () { state.filter = el.getAttribute("data-flt"); state.q = ""; paint(); };
       });

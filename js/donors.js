@@ -58,6 +58,7 @@
           '<div class="filter-pills"><button class="pill ' + (state.filter === "active" ? "active" : "") + '" data-flt="active">النشطون</button>' +
           '<button class="pill ' + (state.filter === "archived" ? "active" : "") + '" data-flt="archived">الأرشيف</button></div>' +
           '<div class="spacer" style="flex:1"></div>' +
+          '<button class="btn secondary" id="dPrintList"><span class="ico">🖨️</span> طباعة القائمة</button>' +
           '<button class="btn secondary" id="dExport"><span class="ico">⬇️</span> تصدير</button>' +
           '<button class="btn" id="dAdd"><span class="ico">＋</span> إضافة متبرّع</button>' +
         "</div>" + body;
@@ -71,6 +72,13 @@
           { label: "الهاتف", key: "phone" }, { label: "عدد التبرعات", get: function (d) { return DB.where(DON, "donorId", d.id).length; } },
           { label: "مجموع التبرعات", get: function (d) { return donorTotal(d.id); } }];
         U.download("المتبرعون-" + U.today() + ".csv", U.toCSV(list, headers), "text/csv"); U.toast("تم التصدير");
+      };
+      document.getElementById("dPrintList").onclick = function () {
+        if (!list.length) return U.toast("لا توجد بيانات للطباعة", "info");
+        U.printTable("قائمة المتبرّعين", ["الاسم واللقب", "الصفة", "الهاتف", "عدد التبرعات", "مجموع التبرعات"],
+          list.map(function (d) {
+            return [fullName(d), d.type || "فرد", d.phone || "—", DB.where(DON, "donorId", d.id).length, U.fmtMoney(donorTotal(d.id))];
+          }), { subtitle: state.filter === "archived" ? "الأرشيف" : "النشطون" });
       };
       container.querySelectorAll("[data-flt]").forEach(function (el) { el.onclick = function () { state.filter = el.getAttribute("data-flt"); paint(); }; });
       container.querySelectorAll("[data-open]").forEach(function (el) { el.onclick = function (e) { e.preventDefault(); App.navigate("donors", { id: el.getAttribute("data-open") }); }; });

@@ -54,6 +54,8 @@
     }
 
     container.innerHTML =
+      '<div class="toolbar no-print"><div class="spacer" style="flex:1"></div>' +
+        '<button class="btn secondary" id="dashPrint"><span class="ico">🖨️</span> طباعة لوحة الإحصائيات</button></div>' +
       '<div class="cards grid-4 mb-16">' +
         stat("green", "👨‍👩‍👧‍👦", "العائلات", U.fmtNum(ben.length), "عائلة") +
         stat("gold", "👤", "المنتفعون (الأفراد)", U.fmtNum(mem.length), "فرد") +
@@ -83,6 +85,22 @@
     container.querySelectorAll("[data-go]").forEach(function (el) {
       el.onclick = function () { App.navigate(el.getAttribute("data-go")); };
     });
+
+    document.getElementById("dashPrint").onclick = function () {
+      var rows = [
+        ["العائلات", U.fmtNum(ben.length) + " عائلة"],
+        ["المنتفعون (الأفراد)", U.fmtNum(mem.length) + " فرد"],
+        ["المتبرّعون", U.fmtNum(don.length) + " متبرّع"],
+        ["إجمالي التبرعات والمداخيل", U.fmtMoney(inflow)],
+        ["إجمالي المساعدات الممنوحة", U.fmtMoney(totalAid)],
+        ["إجمالي المصاريف", U.fmtMoney(totalExpense)],
+        ["الرصيد الصافي", U.fmtMoney(balance)],
+        ["عدد عمليات المساعدة", U.fmtNum(DB.count("aid", true)) + " عملية"],
+        ["عائلات استفادت فعلياً", U.fmtNum(familiesServed) + " عائلة"]
+      ];
+      var kv = '<div class="kv">' + rows.map(function (r) { return "<div><b>" + r[0] + ":</b> " + U.esc(r[1]) + "</div>"; }).join("") + "</div>";
+      U.printHTML("لوحة الإحصائيات — " + s.orgName, "<h2>ملخّص عام</h2>" + kv);
+    };
 
     // ترحيب عند فراغ البيانات
     if (DB.isEmpty()) {
