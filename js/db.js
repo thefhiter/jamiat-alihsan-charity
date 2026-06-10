@@ -6,7 +6,7 @@
   "use strict";
 
   var PREFIX = "ihsan:";
-  var COLLECTIONS = ["beneficiaries", "members", "donors", "aid", "donations", "expenses", "incomes", "ihsan"];
+  var COLLECTIONS = ["beneficiaries", "members", "donors", "aid", "donations", "expenses", "incomes"];
   var SCHEMA_VERSION = 1;
 
   function key(name) { return PREFIX + name; }
