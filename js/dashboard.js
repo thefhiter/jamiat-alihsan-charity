@@ -9,6 +9,7 @@
   App.views.dashboard = function (container) {
     var s = DB.settings();
     var benAll = DB.all("beneficiaries"), ben = benAll.filter(function (b) { return !b.archived; });
+    var memAll = DB.all("members"), mem = memAll.filter(function (m) { return !m.archived; });
     var donAll = DB.all("donors"), don = donAll.filter(function (d) { return !d.archived; });
 
     var totalDonations = DB.sum("donations", "amount");
@@ -54,17 +55,17 @@
 
     container.innerHTML =
       '<div class="cards grid-4 mb-16">' +
-        stat("green", "👨‍👩‍👧‍👦", "العائلات المنتفعة", U.fmtNum(ben.length), "عائلة") +
-        stat("gold", "🤝", "المتبرّعون", U.fmtNum(don.length), "متبرّع") +
-        stat("blue", "📈", "إجمالي التبرعات والمداخيل", U.fmtMoney(inflow)) +
+        stat("green", "👨‍👩‍👧‍👦", "العائلات", U.fmtNum(ben.length), "عائلة") +
+        stat("gold", "👤", "المنتفعون (الأفراد)", U.fmtNum(mem.length), "فرد") +
+        stat("blue", "🤝", "المتبرّعون", U.fmtNum(don.length), "متبرّع") +
         stat(balance >= 0 ? "green" : "red", "⚖️", "الرصيد الصافي", U.fmtMoney(balance)) +
       "</div>" +
 
       '<div class="cards grid-4 mb-16">' +
+        stat("blue", "📈", "إجمالي التبرعات والمداخيل", U.fmtMoney(inflow)) +
         stat("red", "🎁", "إجمالي المساعدات الممنوحة", U.fmtMoney(totalAid)) +
         stat("blue", "🧾", "عدد عمليات المساعدة", U.fmtNum(DB.count("aid", true)), "عملية") +
         stat("gold", "❤️", "عائلات استفادت فعلياً", U.fmtNum(familiesServed), "عائلة") +
-        stat("green", "📦", "الأرشيف", U.fmtNum(benAll.length - ben.length + (donAll.length - don.length)), "ملف") +
       "</div>" +
 
       '<div class="cards grid-2 mb-16">' +
