@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarthaBot — النموذج ثلاثي الأبعاد</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐢</text></svg>">
+<style>
+  :root {
+    --bg: #10151b; --panel: #171e26; --panel2: #1d2630; --line: #2b3641;
+    --text: #e8edf2; --muted: #9db0c0; --accent: #22d3ee; --red: #a4373a; --gold: #e3b23c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Tajawal", "Segoe UI", system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 10px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
+    flex: 0 0 auto;
+  }
+  header .mark {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #c9575a, var(--red) 70%);
+    border: 2px solid var(--gold); flex: 0 0 auto;
+  }
+  header h1 { font-size: 17px; font-weight: 700; }
+  header p { font-size: 12px; color: var(--muted); }
+  main { flex: 1 1 auto; display: flex; min-height: 0; }
+  #sidebar {
+    width: 265px; flex: 0 0 auto; background: var(--panel);
+    border-inline-start: 1px solid var(--line);
+    display: flex; flex-direction: column; min-height: 0; order: 2;
+  }
+  #sidebar h2 {
+    font-size: 13px; color: var(--muted); font-weight: 700;
+    padding: 12px 16px 8px; letter-spacing: .3px;
+  }
+  #part-list { list-style: none; overflow-y: auto; flex: 1 1 auto; }
+  #part-list li {
+    padding: 9px 16px; cursor: pointer; border-inline-start: 3px solid transparent;
+    display: flex; flex-direction: column; gap: 1px;
+  }
+  #part-list li:hover { background: var(--panel2); }
+  #part-list li.active { background: var(--panel2); border-inline-start-color: var(--accent); }
+  #part-list li span { font-size: 13.5px; }
+  #part-list li small { font-size: 10.5px; color: var(--muted); direction: ltr; text-align: end; }
+  #info {
+    border-top: 1px solid var(--line); padding: 12px 16px; min-height: 96px;
+    background: var(--panel2); flex: 0 0 auto;
+  }
+  #info-title { font-size: 13px; color: var(--accent); margin-bottom: 5px; }
+  #info-body { font-size: 12.5px; color: var(--text); line-height: 1.65; }
+  #viewport { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; order: 1; }
+  #scene { flex: 1 1 auto; min-height: 0; position: relative; }
+  #scene canvas { display: block; position: absolute; inset: 0; }
+  #toolbar {
+    flex: 0 0 auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 10px 14px; background: var(--panel); border-top: 1px solid var(--line);
+  }
+  button {
+    font-family: inherit; font-size: 13px; color: var(--text);
+    background: var(--panel2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 7px 14px; cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #06282e; font-weight: 700; border-color: transparent; }
+  button.on { border-color: var(--gold); color: var(--gold); }
+  .explode-wrap { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+  .explode-wrap label { font-size: 12.5px; color: var(--muted); }
+  input[type=range] { width: 160px; accent-color: var(--accent); }
+  @media (max-width: 760px) {
+    main { flex-direction: column; }
+    #sidebar { width: 100%; order: 2; max-height: 38vh; flex-direction: column; }
+    #viewport { order: 1; min-height: 46vh; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="mark" aria-hidden="true"></div>
+    <div>
+      <h1>CarthaBot — النموذج ثلاثي الأبعاد</h1>
+      <p>روبوت الرسم السلحفائي · نسخة الترقية بمحركي N20 المشفّرين + RP2040/DRV8833 · اسحب للتدوير، عجلة الفأرة للتقريب</p>
+    </div>
+  </header>
+  <main>
+    <div id="viewport">
+      <div id="scene"></div>
+      <div id="toolbar">
+        <button id="btn-play" class="primary">▶ تشغيل الرسم</button>
+        <button id="btn-reset-draw">🗑 مسح الرسم</button>
+        <button id="btn-shell">الغطاء: شفاف</button>
+        <button id="btn-rotate">دوران تلقائي</button>
+        <button id="btn-camera">إعادة الكاميرا</button>
+        <div class="explode-wrap">
+          <label for="explode">عرض مُفكَّك</label>
+          <input type="range" id="explode" min="0" max="100" value="0">
+        </div>
+      </div>
+    </div>
+    <aside id="sidebar">
+      <h2>قائمة المكوّنات — Bill of Materials</h2>
+      <ul id="part-list"></ul>
+      <div id="info">
+        <div id="info-title"></div>
+        <div id="info-body">انقر على أي مكوّن في القائمة أو في المشهد لعرض تفاصيله.</div>
+      </div>
+    </aside>
+  </main>
+  <script type="importmap">
+    { "imports": { "three": "./lib/three.module.min.js" } }
+  </script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
